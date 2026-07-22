@@ -1,5 +1,6 @@
 package com.livedesk.common;
 
+import com.livedesk.agent.DuplicateEmailException;
 import com.livedesk.ticket.TicketNotFoundException;
 import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpStatus;
@@ -26,5 +27,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleInvalidArgument(IllegalArgumentException ex){
         ErrorResponse error = new ErrorResponse(ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(DuplicateEmailException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicateEmail(DuplicateEmailException ex){
+        ErrorResponse error = new ErrorResponse(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 }

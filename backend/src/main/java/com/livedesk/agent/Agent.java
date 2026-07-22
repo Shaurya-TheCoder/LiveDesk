@@ -1,5 +1,6 @@
 package com.livedesk.agent;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -16,7 +17,7 @@ public class Agent {
         if (passwordHash == null || passwordHash.isBlank()) {
             throw new IllegalArgumentException("passwordHash must not be null or blank");
         }
-        this.email = email;
+        this.email = email.toLowerCase(Locale.ROOT);
         this.passwordHash = passwordHash;
     }
 

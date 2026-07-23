@@ -1,9 +1,14 @@
 package com.livedesk.agent;
 
+import com.livedesk.agent.dto.LoginAgentRequest;
+import com.livedesk.agent.dto.LoginAgentResponse;
+import com.livedesk.agent.dto.RegisterAgentRequest;
+import com.livedesk.agent.dto.RegisterAgentResponse;
+import com.livedesk.agent.exception.DuplicateEmailException;
+import com.livedesk.agent.exception.InvalidCredentialsException;
 import org.springframework.stereotype.Service;
 
 import java.util.Locale;
-import java.util.Optional;
 
 @Service
 public class AgentService {
@@ -33,5 +38,23 @@ public class AgentService {
                 .orElseThrow(() ->
                         new IllegalStateException("Saved agent has no ID"));
         return new RegisterAgentResponse(agentId, email);
+    }
+
+    public LoginAgentResponse login(LoginAgentRequest loginAgentRequest){
+        String email = loginAgentRequest.email();
+        String rawPassword = loginAgentRequest.rawPassword();
+
+        Agent agent = agentRepository.findByEmail(email)
+                       .orElseThrow(()->
+                               new InvalidCredentialsException("Invalid Credentials"));
+
+        if(!agent.matchesPassword(rawPassword, passwordHasher)){
+            throw new InvalidCredentialsException("Invalid Credentials");
+        }
+        Long id = agent.getId()
+                .orElseThrow(() ->
+                        new IllegalStateException("Authenticated agent has no id"));
+
+        return new LoginAgentResponse(id , agent.getEmail(), "TODO-generate-jwt");
     }
 }

@@ -17,7 +17,7 @@ public class Agent {
         if (passwordHash == null || passwordHash.isBlank()) {
             throw new IllegalArgumentException("passwordHash must not be null or blank");
         }
-        this.email = email.toLowerCase(Locale.ROOT);
+        this.email = email.toLowerCase(Locale.ROOT).trim();
         this.passwordHash = passwordHash;
     }
 

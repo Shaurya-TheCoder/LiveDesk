@@ -29,7 +29,7 @@ public class AgentRepository {
     public Optional<Agent> findByEmail(String email) {
         Objects.requireNonNull(email, "email must not be null");
 
-        String normalizedEmail = email.toLowerCase(Locale.ROOT);
+        String normalizedEmail = email.toLowerCase(Locale.ROOT).trim();
 
         return agentsById.values()
                 .stream()

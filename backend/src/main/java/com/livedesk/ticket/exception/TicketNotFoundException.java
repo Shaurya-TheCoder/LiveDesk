@@ -1,4 +1,4 @@
-package com.livedesk.ticket;
+package com.livedesk.ticket.exception;
 
 public class TicketNotFoundException extends RuntimeException {
     public TicketNotFoundException(String message) {

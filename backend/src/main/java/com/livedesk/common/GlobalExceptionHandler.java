@@ -2,7 +2,7 @@ package com.livedesk.common;
 
 import com.livedesk.agent.exception.DuplicateEmailException;
 import com.livedesk.agent.exception.InvalidCredentialsException;
-import com.livedesk.ticket.TicketNotFoundException;
+import com.livedesk.ticket.exception.TicketNotFoundException;
 import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

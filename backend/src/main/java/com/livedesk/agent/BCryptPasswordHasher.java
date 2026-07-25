@@ -1,7 +1,9 @@
 package com.livedesk.agent;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 
+@Component
 public class BCryptPasswordHasher implements PasswordHasher{
 
     private final PasswordEncoder passwordEncoder;

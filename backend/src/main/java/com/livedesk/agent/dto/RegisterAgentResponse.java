@@ -1,4 +1,4 @@
 package com.livedesk.agent.dto;
 
-public record RegisterAgentResponse(Long id, String email) {
+public record RegisterAgentResponse(Long id, String email, String token) {
 }

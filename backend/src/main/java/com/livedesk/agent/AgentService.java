@@ -6,6 +6,7 @@ import com.livedesk.agent.dto.RegisterAgentRequest;
 import com.livedesk.agent.dto.RegisterAgentResponse;
 import com.livedesk.agent.exception.DuplicateEmailException;
 import com.livedesk.agent.exception.InvalidCredentialsException;
+import com.livedesk.auth.jwt.JwtService;
 import org.springframework.stereotype.Service;
 
 import java.util.Locale;
@@ -14,11 +15,12 @@ import java.util.Locale;
 public class AgentService {
     private final AgentRepository agentRepository;
     private final PasswordHasher passwordHasher;
-
+    private final JwtService jwtService;
     //Constructor Injection
-    public AgentService(AgentRepository agentRepository, PasswordHasher passwordHasher){
+    public AgentService(AgentRepository agentRepository, PasswordHasher passwordHasher, JwtService jwtService){
         this.agentRepository = agentRepository;
         this.passwordHasher = passwordHasher;
+        this.jwtService = jwtService;
     }
     public RegisterAgentResponse register(RegisterAgentRequest agentRequest){
         String email = agentRequest.email().toLowerCase(Locale.ROOT); // normalized email
@@ -37,7 +39,7 @@ public class AgentService {
                 .getId()
                 .orElseThrow(() ->
                         new IllegalStateException("Saved agent has no ID"));
-        return new RegisterAgentResponse(agentId, email);
+        return new RegisterAgentResponse(agentId, email, jwtService.generateToken(agentId, email));
     }
 
     public LoginAgentResponse login(LoginAgentRequest loginAgentRequest) {
@@ -55,6 +57,6 @@ public class AgentService {
                 .orElseThrow(() ->
                         new IllegalStateException("Authenticated agent has no id"));
 
-        return new LoginAgentResponse(id, agent.getEmail(), "TODO-generate-jwt");
+        return new LoginAgentResponse(id, agent.getEmail(), jwtService.generateToken(id, agent.getEmail()));
     }
 }

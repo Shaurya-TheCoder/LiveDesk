@@ -1,5 +1,7 @@
 package com.livedesk.agent;
 
+import com.livedesk.agent.constant.Role;
+
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
@@ -8,17 +10,22 @@ import java.util.Optional;
 public class Agent {
     private Long id;
     private final String email;
+    private final Role role;
     private String passwordHash;
 
-    public Agent(String email, String passwordHash) {
+    public Agent(String email, String passwordHash, Role role) {
         if (email == null || email.isBlank()) {
             throw new IllegalArgumentException("email must not be null or blank");
         }
         if (passwordHash == null || passwordHash.isBlank()) {
             throw new IllegalArgumentException("passwordHash must not be null or blank");
         }
+        if (role == null) {
+            throw new IllegalArgumentException("role must not be null");
+        }
         this.email = email.toLowerCase(Locale.ROOT).trim();
         this.passwordHash = passwordHash;
+        this.role = role;
     }
 
     public Optional<Long> getId(){
@@ -35,6 +42,7 @@ public class Agent {
     public String getEmail(){
         return email;
     }
+    public Role getRole(){ return  role; }
 
     public void setPasswordHash(String newPasswordHash){
         passwordHash = newPasswordHash;

@@ -1,5 +1,6 @@
 package com.livedesk.auth.jwt;
 
+import com.livedesk.agent.constant.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -28,13 +29,14 @@ public class JwtService {
     }
 
 
-    public String generateToken(long agentId, String email){
+    public String generateToken(long agentId, String email, Role role){
         Date now = new Date();
         Date expiry = new Date(now.getTime() + expirationMs);
 
         return Jwts.builder()
                 .subject(String.valueOf(agentId))
                 .claim("email", email)
+                .claim("role", role.name())
                 .issuedAt(now)
                 .expiration(expiry)
                 .signWith(key)

@@ -1,5 +1,6 @@
 package com.livedesk.agent;
 
+import com.livedesk.agent.constant.Role;
 import com.livedesk.agent.dto.LoginAgentRequest;
 import com.livedesk.agent.dto.LoginAgentResponse;
 import com.livedesk.agent.dto.RegisterAgentRequest;
@@ -33,13 +34,13 @@ public class AgentService {
 
         //hash raw password
         String hashedPassword = passwordHasher.hash(rawPassword);
-        Agent agent = new Agent(email, hashedPassword); // New Agent created
+        Agent agent = new Agent(email, hashedPassword, Role.AGENT); // New Agent created
 
         Long agentId = agentRepository.save(agent)
                 .getId()
                 .orElseThrow(() ->
                         new IllegalStateException("Saved agent has no ID"));
-        return new RegisterAgentResponse(agentId, email, jwtService.generateToken(agentId, email));
+        return new RegisterAgentResponse(agentId, email, jwtService.generateToken(agentId, email, Role.AGENT));
     }
 
     public LoginAgentResponse login(LoginAgentRequest loginAgentRequest) {
@@ -57,6 +58,6 @@ public class AgentService {
                 .orElseThrow(() ->
                         new IllegalStateException("Authenticated agent has no id"));
 
-        return new LoginAgentResponse(id, agent.getEmail(), jwtService.generateToken(id, agent.getEmail()));
+        return new LoginAgentResponse(id, agent.getEmail(), jwtService.generateToken(id, agent.getEmail(), agent.getRole()));
     }
 }

@@ -24,23 +24,17 @@ public class AgentService {
         this.jwtService = jwtService;
     }
     public RegisterAgentResponse register(RegisterAgentRequest agentRequest){
-        String email = agentRequest.email().toLowerCase(Locale.ROOT); // normalized email
-        String rawPassword = agentRequest.rawPassword();
-
-        //Check weather an email already exists
-        if(agentRepository.findByEmail(email).isPresent()){
-            throw new DuplicateEmailException("Email already exists.");
-        }
-
-        //hash raw password
-        String hashedPassword = passwordHasher.hash(rawPassword);
-        Agent agent = new Agent(email, hashedPassword, Role.AGENT); // New Agent created
-
-        Long agentId = agentRepository.save(agent)
+        // New Agent created
+        Agent agent = createAgent(
+                agentRequest.email(),
+                agentRequest.rawPassword(),
+                Role.AGENT
+        );
+        Long agentId = agent
                 .getId()
                 .orElseThrow(() ->
                         new IllegalStateException("Saved agent has no ID"));
-        return new RegisterAgentResponse(agentId, email, jwtService.generateToken(agentId, email, Role.AGENT));
+        return new RegisterAgentResponse(agentId, agent.getEmail(), jwtService.generateToken(agentId, agent.getEmail(), Role.AGENT));
     }
 
     public LoginAgentResponse login(LoginAgentRequest loginAgentRequest) {
@@ -59,5 +53,19 @@ public class AgentService {
                         new IllegalStateException("Authenticated agent has no id"));
 
         return new LoginAgentResponse(id, agent.getEmail(), jwtService.generateToken(id, agent.getEmail(), agent.getRole()));
+    }
+    Agent createAgent(String email, String rawPassword, Role role) {
+
+        email = email.toLowerCase(Locale.ROOT).trim();
+
+        if(agentRepository.findByEmail(email).isPresent()){
+            throw new DuplicateEmailException("Email already exists.");
+        }
+
+        String hashedPassword = passwordHasher.hash(rawPassword);
+
+        Agent agent = new Agent(email, hashedPassword, role);
+
+        return agentRepository.save(agent);
     }
 }

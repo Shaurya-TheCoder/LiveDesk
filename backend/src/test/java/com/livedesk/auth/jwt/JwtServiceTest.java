@@ -1,5 +1,6 @@
 package com.livedesk.auth.jwt;
 
+import com.livedesk.agent.constant.Role;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,7 +16,8 @@ class JwtServiceTest {
     void shouldGenerateToken(){
         String token = jwtService.generateToken(
                 1L,
-                "test@example.com"
+                "test@example.com",
+                Role.AGENT
         );
 
         System.out.println(token);

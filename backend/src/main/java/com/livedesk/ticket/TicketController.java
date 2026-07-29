@@ -1,5 +1,7 @@
 package com.livedesk.ticket;
 
+import com.livedesk.ticket.dto.CreateTicketRequest;
+import com.livedesk.ticket.exception.TicketNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

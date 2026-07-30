@@ -3,8 +3,8 @@ package com.livedesk.agent;
 import com.livedesk.agent.constant.Role;
 import com.livedesk.agent.dto.LoginAgentRequest;
 import com.livedesk.agent.dto.LoginAgentResponse;
-import com.livedesk.agent.dto.RegisterAgentRequest;
-import com.livedesk.agent.dto.RegisterAgentResponse;
+import com.livedesk.agent.dto.CreateAgentRequest;
+import com.livedesk.agent.dto.CreateAgentResponse;
 import com.livedesk.agent.exception.DuplicateEmailException;
 import com.livedesk.agent.exception.InvalidCredentialsException;
 import com.livedesk.auth.jwt.JwtService;
@@ -23,18 +23,13 @@ public class AgentService {
         this.passwordHasher = passwordHasher;
         this.jwtService = jwtService;
     }
-    public RegisterAgentResponse register(RegisterAgentRequest agentRequest){
+    public Agent createAgentAccount(String email, String rawPassword){
         // New Agent created
-        Agent agent = createAgent(
-                agentRequest.email(),
-                agentRequest.rawPassword(),
+        return  createAgent(
+                email,
+                rawPassword,
                 Role.AGENT
         );
-        Long agentId = agent
-                .getId()
-                .orElseThrow(() ->
-                        new IllegalStateException("Saved agent has no ID"));
-        return new RegisterAgentResponse(agentId, agent.getEmail(), jwtService.generateToken(agentId, agent.getEmail(), Role.AGENT));
     }
 
     public LoginAgentResponse login(LoginAgentRequest loginAgentRequest) {

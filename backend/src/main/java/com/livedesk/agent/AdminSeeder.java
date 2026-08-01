@@ -2,7 +2,7 @@ package com.livedesk.agent;
 
 import com.livedesk.agent.constant.Role;
 import com.livedesk.agent.exception.DuplicateEmailException;
-import com.livedesk.auth.jwt.JwtService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -10,26 +10,25 @@ import org.springframework.stereotype.Component;
 public class AdminSeeder implements CommandLineRunner{
 
     private final AgentService agentService;
-    private final JwtService jwtService;
 
-    public AdminSeeder(AgentService agentService, JwtService jwtService){
+    private final String email;
+    private final String password;
+
+    public AdminSeeder(AgentService agentService, @Value("${admin.email}") String email, @Value("${admin.password}") String password){
         this.agentService = agentService;
-        this.jwtService = jwtService;
+        this.email = email;
+        this.password = password;
     }
 
     @Override
     public void run(String... args) throws Exception {
         try {
-            Agent agent = agentService.createAgent(
-                    "admin@livedesk.com",
-                    "admin123",
+            agentService.createAgent(
+                    email,
+                    password,
                     Role.ADMIN
             );
-            Long agentId = agent
-                    .getId()
-                    .orElseThrow(() ->
-                            new IllegalStateException("Saved agent has no ID"));
-            System.out.println(jwtService.generateToken(agentId, agent.getEmail(), agent.getRole()));
+            System.out.println("Admin created successfully");
         }catch (DuplicateEmailException e){
             System.out.println(e.getMessage());
         }

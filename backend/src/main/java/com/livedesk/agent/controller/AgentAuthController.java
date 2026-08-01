@@ -3,8 +3,6 @@ package com.livedesk.agent.controller;
 import com.livedesk.agent.AgentService;
 import com.livedesk.agent.dto.LoginAgentRequest;
 import com.livedesk.agent.dto.LoginAgentResponse;
-import com.livedesk.agent.dto.CreateAgentRequest;
-import com.livedesk.agent.dto.CreateAgentResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

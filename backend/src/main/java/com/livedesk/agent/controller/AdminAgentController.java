@@ -25,7 +25,6 @@ public class AdminAgentController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CreateAgentResponse> createAgent(@Valid @RequestBody CreateAgentRequest createAgentRequest){
         Agent agent = agentService.createAgentAccount(createAgentRequest.email(), createAgentRequest.rawPassword());
-
         CreateAgentResponse response =
                     new CreateAgentResponse(
                             agent.getId().orElseThrow(

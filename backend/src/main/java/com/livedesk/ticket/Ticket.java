@@ -7,17 +7,17 @@ import java.util.Optional;
 public class Ticket {
 
     private Long id;
-    private String subject;
+    private String firstMessage;
     private TicketStatus status;
     private final LocalDateTime createdAt;
 
-    public Ticket(String subject, LocalDateTime createdAt) {
-        if(subject == null || subject.isBlank()) {
+    public Ticket(String firstMessage, LocalDateTime createdAt) {
+        if(firstMessage == null || firstMessage.isBlank()) {
             throw new IllegalArgumentException("subject must not be null or blank");
         }
         Objects.requireNonNull(createdAt, "ticket creation date should not be null.");
-        this.subject = subject;
-        this.status = TicketStatus.QUEUED;
+        this.firstMessage = firstMessage;
+        this.status = TicketStatus.OPEN;
         this.createdAt = createdAt;
     }
     void setId(Long id){
@@ -31,8 +31,8 @@ public class Ticket {
         return Optional.ofNullable(id);
     }
 
-    public String getSubject(){
-        return subject;
+    public String getFirstMessage(){
+        return firstMessage;
     }
     public TicketStatus getStatus(){
         return status;
@@ -41,11 +41,18 @@ public class Ticket {
         return createdAt;
     }
     public void assign(){
-        if(status != TicketStatus.QUEUED) {
-            throw new IllegalStateException("Cannot assign a ticket that is not QUEUED. Current status: " + status);
+        if(status != TicketStatus.OPEN && status != TicketStatus.QUEUED) {
+            throw new IllegalStateException("Cannot assign ticket in status " + status + ". Only OPEN or QUEUED tickets can be assigned.");
         }
         status = TicketStatus.ASSIGNED;
     }
+    public void queue(){
+        if(status != TicketStatus.OPEN) {
+            throw new IllegalStateException("Cannot queue a ticket that is not OPEN. Current status: " + status);
+        }
+        status = TicketStatus.QUEUED;
+    }
+
     public void resolve(){
         if(status != TicketStatus.ASSIGNED) {
             throw new IllegalStateException("Cannot resolve a ticket that is not ASSIGNED. Current status: " + status);

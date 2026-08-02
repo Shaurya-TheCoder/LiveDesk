@@ -13,9 +13,13 @@ public class TicketRepository {
     private final Map<Long, Ticket> store = new ConcurrentHashMap<>();
 
     public Ticket save(Ticket ticket){
-        long newId = idGenerator.incrementAndGet();
-        ticket.setId(newId);
-        store.put(newId , ticket);
+        if (ticket.getId().isEmpty()) {
+            ticket.setId(idGenerator.incrementAndGet());
+        }
+
+        store.put(ticket.getId().orElseThrow(
+                () -> new IllegalStateException("ticket id wasn't found.")
+        ), ticket);
 
         return ticket;
     }

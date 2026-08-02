@@ -13,8 +13,8 @@ public class TicketService {
         this.ticketRepository = ticketRepository;
     }
 
-    public Ticket createTicket(String subject){
-        Ticket ticket = new Ticket(subject, LocalDateTime.now());
+    public Ticket createTicket(String firstMessage){
+        Ticket ticket = new Ticket(firstMessage, LocalDateTime.now());
         return ticketRepository.save(ticket);
     }
     public Optional<Ticket> getTicket(Long id) {

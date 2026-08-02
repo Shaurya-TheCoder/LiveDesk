@@ -1,3 +1,12 @@
 package com.livedesk.ticket.dto;
 
-public record CreateTicketRequest(String subject) {}
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
+public record CreateTicketRequest(
+
+        @NotBlank(message = "First message must not be blank")
+        @Size(max = 2000, message = "First message must not exceed 2000 characters")
+        String message
+
+) {}

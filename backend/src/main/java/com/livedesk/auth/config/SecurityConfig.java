@@ -1,8 +1,11 @@
 package com.livedesk.auth.config;
 
+import com.livedesk.auth.RestAccessDeniedHandler;
 import com.livedesk.auth.RestAuthenticationEntryPoint;
 import com.livedesk.auth.jwt.JwtAuthenticationFilter;
 import com.livedesk.auth.jwt.JwtService;
+import com.livedesk.auth.session_token.SessionTokenAuthenticationFilter;
+import com.livedesk.chatsession.ChatSessionService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -29,8 +32,20 @@ public class SecurityConfig {
     ) {
         return new JwtAuthenticationFilter(jwtService);
     }
+
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter, RestAuthenticationEntryPoint restAuthenticationEntryPoint){
+    public SessionTokenAuthenticationFilter sessionTokenAuthenticationFilter(
+            ChatSessionService chatSessionService,
+            RestAuthenticationEntryPoint restAuthenticationEntryPoint
+    ) {
+        return new SessionTokenAuthenticationFilter(
+                chatSessionService
+        );
+    }
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter,
+                                                   RestAuthenticationEntryPoint restAuthenticationEntryPoint,
+                                                   SessionTokenAuthenticationFilter sessionTokenAuthenticationFilter, RestAccessDeniedHandler restAccessDeniedHandler){
         http.csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
@@ -39,7 +54,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/api/v1/tickets").permitAll()
                         .anyRequest().authenticated()
                 ).addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling(ex -> ex.authenticationEntryPoint(restAuthenticationEntryPoint));
+                .addFilterBefore(sessionTokenAuthenticationFilter, JwtAuthenticationFilter.class)
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(restAuthenticationEntryPoint)
+                        .accessDeniedHandler(restAccessDeniedHandler)
+                );
         return http.build();
     }
 }

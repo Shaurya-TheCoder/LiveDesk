@@ -1,5 +1,6 @@
 package com.livedesk.chatsession;
 
+import com.livedesk.auth.session_token.InvalidSessionTokenException;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -25,5 +26,13 @@ public class ChatSessionService {
         byte[] bytes = new byte[32];
         RANDOM.nextBytes(bytes);
         return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
+    }
+    public ChatSession validateToken(String token){
+        if (token == null || token.isBlank()) {
+            throw new IllegalArgumentException("Session token must not be blank");
+        }
+
+        return chatSessionRepository.findByToken(token)
+                .orElseThrow(() -> new InvalidSessionTokenException("Invalid session token"));
     }
 }

@@ -1,6 +1,5 @@
 package com.livedesk.auth.session_token;
 
-import com.livedesk.auth.RestAuthenticationEntryPoint;
 import com.livedesk.chatsession.ChatSession;
 import com.livedesk.chatsession.ChatSessionService;
 import jakarta.servlet.FilterChain;
@@ -16,11 +15,9 @@ import java.util.Collections;
 
 public class SessionTokenAuthenticationFilter extends OncePerRequestFilter {
     private final ChatSessionService chatSessionService;
-    private final RestAuthenticationEntryPoint restAuthenticationEntryPoint;
 
-    public SessionTokenAuthenticationFilter(ChatSessionService chatSessionService, RestAuthenticationEntryPoint restAuthenticationEntryPoint){
+    public SessionTokenAuthenticationFilter(ChatSessionService chatSessionService){
         this.chatSessionService = chatSessionService;
-        this.restAuthenticationEntryPoint = restAuthenticationEntryPoint;
     }
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -46,7 +43,7 @@ public class SessionTokenAuthenticationFilter extends OncePerRequestFilter {
             );
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }catch(InvalidSessionTokenException exception){
-            restAuthenticationEntryPoint.commence(request, response, exception);
+            filterChain.doFilter(request, response);
             return;
         }
 

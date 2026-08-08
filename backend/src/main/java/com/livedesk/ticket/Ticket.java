@@ -13,7 +13,7 @@ public class Ticket {
 
     public Ticket(String firstMessage, LocalDateTime createdAt) {
         if(firstMessage == null || firstMessage.isBlank()) {
-            throw new IllegalArgumentException("subject must not be null or blank");
+            throw new IllegalArgumentException("message must not be null or blank");
         }
         Objects.requireNonNull(createdAt, "ticket creation date should not be null.");
         this.firstMessage = firstMessage;

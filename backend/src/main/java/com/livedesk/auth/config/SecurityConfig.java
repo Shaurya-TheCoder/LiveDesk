@@ -35,8 +35,7 @@ public class SecurityConfig {
 
     @Bean
     public SessionTokenAuthenticationFilter sessionTokenAuthenticationFilter(
-            ChatSessionService chatSessionService,
-            RestAuthenticationEntryPoint restAuthenticationEntryPoint
+            ChatSessionService chatSessionService
     ) {
         return new SessionTokenAuthenticationFilter(
                 chatSessionService
@@ -52,6 +51,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/v1/tickets").permitAll()
+                        .requestMatchers("/ws/**").permitAll()
                         .anyRequest().authenticated()
                 ).addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(sessionTokenAuthenticationFilter, JwtAuthenticationFilter.class)

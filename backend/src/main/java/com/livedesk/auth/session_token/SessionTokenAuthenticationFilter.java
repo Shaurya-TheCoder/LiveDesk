@@ -1,5 +1,6 @@
 package com.livedesk.auth.session_token;
 
+import com.livedesk.auth.TokenAuthenticationService;
 import com.livedesk.chatsession.ChatSession;
 import com.livedesk.chatsession.ChatSessionService;
 import jakarta.servlet.FilterChain;
@@ -7,6 +8,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -15,9 +17,11 @@ import java.util.Collections;
 
 public class SessionTokenAuthenticationFilter extends OncePerRequestFilter {
     private final ChatSessionService chatSessionService;
+    private final TokenAuthenticationService tokenAuthenticationService;
 
-    public SessionTokenAuthenticationFilter(ChatSessionService chatSessionService){
+    public SessionTokenAuthenticationFilter(ChatSessionService chatSessionService, TokenAuthenticationService tokenAuthenticationService){
         this.chatSessionService = chatSessionService;
+        this.tokenAuthenticationService = tokenAuthenticationService;
     }
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -32,15 +36,7 @@ public class SessionTokenAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
         try {
-            ChatSession session = chatSessionService.validateToken(token);
-
-            CustomerPrincipal principal = new CustomerPrincipal(session.getTicketId());
-
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                    principal,
-                    null,
-                    Collections.emptyList()
-            );
+            Authentication authentication = tokenAuthenticationService.authenticateSessionToken(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }catch(InvalidSessionTokenException exception){
             filterChain.doFilter(request, response);

@@ -2,6 +2,7 @@ package com.livedesk.auth.config;
 
 import com.livedesk.auth.RestAccessDeniedHandler;
 import com.livedesk.auth.RestAuthenticationEntryPoint;
+import com.livedesk.auth.TokenAuthenticationService;
 import com.livedesk.auth.jwt.JwtAuthenticationFilter;
 import com.livedesk.auth.jwt.JwtService;
 import com.livedesk.auth.session_token.SessionTokenAuthenticationFilter;
@@ -28,18 +29,16 @@ public class SecurityConfig {
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter(
-            JwtService jwtService
+            TokenAuthenticationService tokenAuthenticationService
     ) {
-        return new JwtAuthenticationFilter(jwtService);
+        return new JwtAuthenticationFilter(tokenAuthenticationService);
     }
 
     @Bean
     public SessionTokenAuthenticationFilter sessionTokenAuthenticationFilter(
-            ChatSessionService chatSessionService
+            TokenAuthenticationService tokenAuthenticationService
     ) {
-        return new SessionTokenAuthenticationFilter(
-                chatSessionService
-        );
+        return new SessionTokenAuthenticationFilter (tokenAuthenticationService);
     }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter,

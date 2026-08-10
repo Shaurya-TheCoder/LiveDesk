@@ -1,7 +1,6 @@
 package com.livedesk.messenger.controller;
 
 import com.livedesk.messenger.domain.ChatMessage;
-import com.livedesk.messenger.domain.MessageSender;
 import com.livedesk.messenger.dto.ChatMessageResponse;
 import com.livedesk.messenger.dto.SendChatMessageRequest;
 import com.livedesk.messenger.service.ChatMessageService;

@@ -5,7 +5,6 @@ import com.livedesk.auth.session_token.CustomerPrincipal;
 import com.livedesk.messenger.domain.ChatMessage;
 import com.livedesk.messenger.domain.MessageSender;
 import com.livedesk.messenger.repository.ChatMessageRepository;
-import com.livedesk.ticket.TicketService;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 

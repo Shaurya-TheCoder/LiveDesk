@@ -4,7 +4,6 @@ import com.livedesk.auth.TicketAuthorizationService;
 import com.livedesk.auth.TokenAuthenticationService;
 import com.livedesk.auth.session_token.InvalidSessionTokenException;
 
-import com.livedesk.ticket.TicketService;
 import io.jsonwebtoken.JwtException;
 import org.jspecify.annotations.Nullable;
 import org.springframework.messaging.Message;

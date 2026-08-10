@@ -16,11 +16,9 @@ import java.io.IOException;
 import java.util.Collections;
 
 public class SessionTokenAuthenticationFilter extends OncePerRequestFilter {
-    private final ChatSessionService chatSessionService;
     private final TokenAuthenticationService tokenAuthenticationService;
 
-    public SessionTokenAuthenticationFilter(ChatSessionService chatSessionService, TokenAuthenticationService tokenAuthenticationService){
-        this.chatSessionService = chatSessionService;
+    public SessionTokenAuthenticationFilter(TokenAuthenticationService tokenAuthenticationService){
         this.tokenAuthenticationService = tokenAuthenticationService;
     }
     @Override

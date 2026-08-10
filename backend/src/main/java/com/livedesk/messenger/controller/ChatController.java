@@ -1,7 +1,6 @@
 package com.livedesk.messenger.controller;
 
 import com.livedesk.messenger.domain.ChatMessage;
-import com.livedesk.messenger.domain.MessageSender;
 import com.livedesk.messenger.dto.ChatMessageResponse;
 import com.livedesk.messenger.dto.SendChatMessageRequest;
 import com.livedesk.messenger.service.ChatMessageService;
@@ -9,6 +8,7 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 
 @Controller
@@ -22,9 +22,9 @@ public class ChatController {
     }
 
     @MessageMapping("/chat/{ticketId}")
-    public void handleMessage(@DestinationVariable Long ticketId, @Payload SendChatMessageRequest request){
-        ChatMessage message = chatMessageService.sendMessage(ticketId, MessageSender.CUSTOMER, request.content());
+    public void handleMessage(@DestinationVariable Long ticketId, @Payload SendChatMessageRequest request, Authentication authentication){
 
+        ChatMessage message = chatMessageService.sendMessage(ticketId, request.content(), authentication);
         ChatMessageResponse response = new ChatMessageResponse(
                 message.getId().orElseThrow(),
                 message.getTicketId(),

@@ -1,28 +1,23 @@
 package com.livedesk.auth.jwt;
 
-import com.livedesk.agent.constant.Role;
 import com.livedesk.auth.AuthErrorResponseWriter;
-import io.jsonwebtoken.Claims;
+import com.livedesk.auth.TokenAuthenticationService;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
-import java.util.List;
 
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+    private final TokenAuthenticationService tokenAuthenticationService;
 
-    private final JwtService jwtService;
-
-    public JwtAuthenticationFilter(JwtService jwtService){
-        this.jwtService = jwtService;
+    public JwtAuthenticationFilter(TokenAuthenticationService tokenAuthenticationService){
+        this.tokenAuthenticationService = tokenAuthenticationService;
     }
 
     @Override
@@ -38,20 +33,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = authHeader.substring(7); //Extract the token from the header
 
         try{
-            Claims claims = jwtService.validateToken(token);
-            String roleClaim = claims.get("role", String.class);
-            Role role = Role.valueOf(roleClaim);
-
-            List<GrantedAuthority> authorities = List.of(
-                    new SimpleGrantedAuthority("ROLE_" + role.name())
-            );
-
-
-            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                    claims.getSubject(),
-                    null,
-                    authorities
-            );
+            Authentication authToken = tokenAuthenticationService.authenticateJwt(token);
             SecurityContextHolder.getContext().setAuthentication(authToken);
 
         } catch (JwtException e) {

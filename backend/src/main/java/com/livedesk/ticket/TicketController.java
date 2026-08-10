@@ -1,5 +1,6 @@
 package com.livedesk.ticket;
 
+import com.livedesk.auth.TicketAuthorizationService;
 import com.livedesk.auth.session_token.CustomerPrincipal;
 import com.livedesk.chatsession.ChatSession;
 import com.livedesk.chatsession.ChatSessionService;
@@ -19,9 +20,11 @@ import org.springframework.web.bind.annotation.*;
 public class TicketController {
     private final TicketService ticketService;
     private final ChatSessionService chatSessionService;
+    private final TicketAuthorizationService ticketAuthorizationService;
 
-    public TicketController(TicketService ticketService, ChatSessionService chatSessionService){
+    public TicketController(TicketService ticketService,TicketAuthorizationService ticketAuthorizationService, ChatSessionService chatSessionService){
         this.ticketService = ticketService;
+        this.ticketAuthorizationService = ticketAuthorizationService;
         this.chatSessionService = chatSessionService;
     }
     @GetMapping("/tickets/{id}")
@@ -32,7 +35,7 @@ public class TicketController {
         Ticket ticket = ticketService.getTicket(id);
 
         if (authentication.getPrincipal() instanceof CustomerPrincipal principal) {
-            ticketService.verifyCustomerAccess(ticket, principal);
+            ticketAuthorizationService.verifyCustomerAccess(ticket, principal);
         }
 
         GetTicketResponse response = new GetTicketResponse(

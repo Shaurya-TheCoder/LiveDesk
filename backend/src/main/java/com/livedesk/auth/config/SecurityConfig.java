@@ -2,11 +2,9 @@ package com.livedesk.auth.config;
 
 import com.livedesk.auth.RestAccessDeniedHandler;
 import com.livedesk.auth.RestAuthenticationEntryPoint;
-import com.livedesk.auth.TokenAuthenticationService;
+import com.livedesk.auth.service.TokenAuthenticationService;
 import com.livedesk.auth.jwt.JwtAuthenticationFilter;
-import com.livedesk.auth.jwt.JwtService;
 import com.livedesk.auth.session_token.SessionTokenAuthenticationFilter;
-import com.livedesk.chatsession.ChatSessionService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;

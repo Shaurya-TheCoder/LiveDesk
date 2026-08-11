@@ -1,7 +1,7 @@
 package com.livedesk.auth.jwt;
 
 import com.livedesk.auth.AuthErrorResponseWriter;
-import com.livedesk.auth.TokenAuthenticationService;
+import com.livedesk.auth.service.TokenAuthenticationService;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

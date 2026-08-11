@@ -1,11 +1,13 @@
-package com.livedesk.auth;
+package com.livedesk.auth.service;
 
 import com.livedesk.auth.session_token.CustomerPrincipal;
-import com.livedesk.ticket.Ticket;
-import com.livedesk.ticket.TicketService;
+import com.livedesk.ticket.domain.Ticket;
+import com.livedesk.ticket.service.TicketService;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 public class TicketAuthorizationService {
@@ -17,16 +19,16 @@ public class TicketAuthorizationService {
     }
 
     public void verifyAccess(
-            Long ticketId,
+            UUID ticketId,
             Authentication authentication
     ) {
         Ticket ticket = ticketService.getTicket(ticketId);
 
         Object principal = authentication.getPrincipal();
 
-        if (principal instanceof CustomerPrincipal customer) {
+        if (principal instanceof CustomerPrincipal(UUID id)) {
             if (!ticket.getId().orElseThrow()
-                    .equals(customer.getTicketId())) {
+                    .equals(id)) {
 
                 throw new AccessDeniedException(
                         "Not authorized to access this ticket"
@@ -52,7 +54,7 @@ public class TicketAuthorizationService {
     public void verifyCustomerAccess(
             Ticket ticket,
             CustomerPrincipal principal){
-        if (!ticket.getId().orElseThrow().equals(principal.getTicketId())) {
+        if (!ticket.getId().orElseThrow().equals(principal.ticketId())) {
             throw new AccessDeniedException(
                     "Not authorized to access this ticket");
         }

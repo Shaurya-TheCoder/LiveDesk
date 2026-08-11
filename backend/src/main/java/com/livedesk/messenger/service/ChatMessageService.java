@@ -1,6 +1,6 @@
 package com.livedesk.messenger.service;
 
-import com.livedesk.auth.TicketAuthorizationService;
+import com.livedesk.auth.service.TicketAuthorizationService;
 import com.livedesk.auth.session_token.CustomerPrincipal;
 import com.livedesk.messenger.domain.ChatMessage;
 import com.livedesk.messenger.domain.MessageSender;
@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 public class ChatMessageService {
@@ -19,7 +20,7 @@ public class ChatMessageService {
         this.chatMessageRepository = chatMessageRepository;
         this.ticketAuthorizationService = ticketAuthorizationService;
     }
-    public ChatMessage sendMessage(Long ticketId, String content, Authentication authentication){
+    public ChatMessage sendMessage(UUID ticketId, String content, Authentication authentication){
         ticketAuthorizationService.verifyAccess(ticketId, authentication);
 
         MessageSender sender = authentication.getPrincipal() instanceof CustomerPrincipal

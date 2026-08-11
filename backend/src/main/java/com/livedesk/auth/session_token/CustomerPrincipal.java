@@ -1,13 +1,6 @@
 package com.livedesk.auth.session_token;
 
-public class CustomerPrincipal {
-    private final Long ticketId;
+import java.util.UUID;
 
-    public CustomerPrincipal(Long ticketId){
-        this.ticketId = ticketId;
-    }
-
-    public Long getTicketId() {
-        return ticketId;
-    }
+public record CustomerPrincipal(UUID ticketId) {
 }

@@ -1,16 +1,18 @@
-package com.livedesk.agent;
+package com.livedesk.agent.service;
 
-import com.livedesk.agent.constant.Role;
+import com.livedesk.agent.repository.AgentRepository;
+import com.livedesk.agent.PasswordHasher;
+import com.livedesk.agent.domain.Role;
+import com.livedesk.agent.domain.Agent;
 import com.livedesk.agent.dto.LoginAgentRequest;
 import com.livedesk.agent.dto.LoginAgentResponse;
-import com.livedesk.agent.dto.CreateAgentRequest;
-import com.livedesk.agent.dto.CreateAgentResponse;
 import com.livedesk.agent.exception.DuplicateEmailException;
 import com.livedesk.agent.exception.InvalidCredentialsException;
 import com.livedesk.auth.jwt.JwtService;
 import org.springframework.stereotype.Service;
 
 import java.util.Locale;
+import java.util.UUID;
 
 @Service
 public class AgentService {
@@ -43,13 +45,13 @@ public class AgentService {
         if (!agent.matchesPassword(rawPassword, passwordHasher)) {
             throw new InvalidCredentialsException("Invalid Credentials");
         }
-        Long id = agent.getId()
+        UUID id = agent.getId()
                 .orElseThrow(() ->
                         new IllegalStateException("Authenticated agent has no id"));
 
         return new LoginAgentResponse(id, agent.getEmail(), jwtService.generateToken(id, agent.getEmail(), agent.getRole()));
     }
-    Agent createAgent(String email, String rawPassword, Role role) {
+    public Agent createAgent(String email, String rawPassword, Role role) {
 
         email = email.toLowerCase(Locale.ROOT).trim();
 

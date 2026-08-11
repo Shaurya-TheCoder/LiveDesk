@@ -1,10 +1,10 @@
-package com.livedesk.auth;
+package com.livedesk.auth.service;
 
-import com.livedesk.agent.constant.Role;
+import com.livedesk.agent.domain.Role;
 import com.livedesk.auth.jwt.JwtService;
 import com.livedesk.auth.session_token.CustomerPrincipal;
-import com.livedesk.chatsession.ChatSession;
-import com.livedesk.chatsession.ChatSessionService;
+import com.livedesk.chatsession.domain.ChatSession;
+import com.livedesk.chatsession.service.ChatSessionService;
 import io.jsonwebtoken.Claims;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

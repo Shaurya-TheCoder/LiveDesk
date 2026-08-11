@@ -1,4 +1,4 @@
-package com.livedesk.ticket;
+package com.livedesk.ticket.domain;
 
 public enum TicketStatus {
     OPEN,

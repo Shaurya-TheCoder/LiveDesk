@@ -27,7 +27,7 @@ public class TicketAuthorizationService {
         Object principal = authentication.getPrincipal();
 
         if (principal instanceof CustomerPrincipal(UUID id)) {
-            if (!ticket.getId().orElseThrow()
+            if (!ticket.getId()
                     .equals(id)) {
 
                 throw new AccessDeniedException(
@@ -54,7 +54,7 @@ public class TicketAuthorizationService {
     public void verifyCustomerAccess(
             Ticket ticket,
             CustomerPrincipal principal){
-        if (!ticket.getId().orElseThrow().equals(principal.ticketId())) {
+        if (!ticket.getId().equals(principal.ticketId())) {
             throw new AccessDeniedException(
                     "Not authorized to access this ticket");
         }

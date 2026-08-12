@@ -13,6 +13,8 @@ import java.util.UUID;
 public class Agent {
     @Id
     private UUID id;
+
+    @Column(unique = true)
     private String email;
 
     @Enumerated(EnumType.STRING)

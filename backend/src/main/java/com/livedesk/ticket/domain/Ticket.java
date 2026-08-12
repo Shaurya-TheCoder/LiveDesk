@@ -1,10 +1,7 @@
 package com.livedesk.ticket.domain;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 
 @Entity
@@ -13,12 +10,12 @@ public class Ticket {
 
     @Id
     private UUID id;
-    private String firstMessage;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private TicketStatus status;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "assigned_agent_id")
@@ -26,23 +23,17 @@ public class Ticket {
 
     protected Ticket() {}
 
-    public Ticket(String firstMessage, LocalDateTime createdAt) {
-        if(firstMessage == null || firstMessage.isBlank()) {
-            throw new IllegalArgumentException("message must not be null or blank");
-        }
-        Objects.requireNonNull(createdAt, "ticket creation date should not be null.");
+    public Ticket(LocalDateTime createdAt) {
         this.id = UUID.randomUUID();
-        this.firstMessage = firstMessage;
         this.status = TicketStatus.OPEN;
         this.createdAt = createdAt;
         this.assignedAgentId = null;
     }
-    public Optional<UUID> getId() {
-        return Optional.ofNullable(id);
+
+    public UUID getId() {
+        return id;
     }
-    public String getFirstMessage(){
-        return firstMessage;
-    }
+
     public TicketStatus getStatus(){
         return status;
     }

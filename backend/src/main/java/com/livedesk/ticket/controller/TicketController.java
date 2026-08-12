@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 
@@ -42,9 +43,7 @@ public class TicketController {
         }
 
         GetTicketResponse response = new GetTicketResponse(
-                ticket.getId().orElseThrow(
-                        () -> new IllegalStateException("ticket id cannot be null")
-                ),
+                ticket.getId(),
                 ticket.getStatus(),
                 ticket.getCreatedAt()
         );
@@ -53,16 +52,14 @@ public class TicketController {
     }
     @PostMapping("/tickets")
     public ResponseEntity<CreateTicketResponse> createTicket(@Valid @RequestBody CreateTicketRequest request){
-        Ticket ticket = ticketService.createTicket(request.message());
-        UUID ticketId = ticket.getId().orElseThrow(() -> new IllegalStateException("ticket id cannot be null"));
+        Ticket ticket = ticketService.createTicket(request.message(), LocalDateTime.now());
+        UUID ticketId = ticket.getId();
 
         ChatSession session = chatSessionService.createSession(ticketId);
 
 
         CreateTicketResponse response = new CreateTicketResponse(
-                ticket.getId().orElseThrow(
-                        () -> new IllegalStateException("ticket id cannot be null")
-                ),
+                ticket.getId(),
                 session.getSessionToken(), //sessionToken
                 null //queuePosition
         );

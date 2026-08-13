@@ -16,7 +16,7 @@ public class ChatSession {
     @Id
     private UUID id;
 
-    @Column(name = "ticket_id", nullable = false)
+    @Column(name = "ticket_id", nullable = false, unique = true)
     private UUID ticketId;
 
     @Column(name = "session_token", nullable = false, unique = true)

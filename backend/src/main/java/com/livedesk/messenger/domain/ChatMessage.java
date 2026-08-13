@@ -17,14 +17,14 @@ public class ChatMessage {
     @Column(name = "ticket_id", nullable = false)
     private UUID ticketId;
 
-    @Column(name = "sender_type")
+    @Column(name = "sender_type", nullable = false)
     @Enumerated(EnumType.STRING)
     private MessageSender sender;
 
-    @Column(name = "body")
+    @Column(name = "body", nullable = false)
     private String content;
 
-    @Column(name = "sent_at")
+    @Column(name = "sent_at", nullable = false)
     private LocalDateTime createdAt;
 
     protected ChatMessage() {}

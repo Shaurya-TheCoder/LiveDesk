@@ -14,12 +14,14 @@ public class Agent {
     @Id
     private UUID id;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String email;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column(nullable = false)
     private String passwordHash;
 
     protected Agent() {}

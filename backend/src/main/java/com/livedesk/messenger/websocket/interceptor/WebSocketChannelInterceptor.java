@@ -64,8 +64,10 @@ public class WebSocketChannelInterceptor implements ChannelInterceptor {
                 try{
                     Authentication authentication = tokenAuthenticationService.authenticateJwt(token);
                     accessor.setUser(authentication);
-                } catch (JwtException | IllegalArgumentException e) {
+                } catch (JwtException e) {
                     throw new MessagingException("Invalid JWT", e);
+                } catch (IllegalArgumentException e){
+                    throw new MessagingException("Invalid JWT x", e);
                 }
             }
             else if(sessionToken != null){

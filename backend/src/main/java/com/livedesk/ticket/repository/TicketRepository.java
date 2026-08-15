@@ -1,9 +1,26 @@
 package com.livedesk.ticket.repository;
 
 import com.livedesk.ticket.domain.Ticket;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.Optional;
 import java.util.UUID;
 
 public interface TicketRepository extends JpaRepository<Ticket, UUID> {
 
+    @Query(
+            value = """
+        SELECT *
+        FROM tickets
+        WHERE status = 'QUEUED'
+        ORDER BY created_at ASC
+        LIMIT 1
+        FOR UPDATE SKIP LOCKED
+        """,
+            nativeQuery = true
+    )
+    Optional<Ticket> findOldestQueuedTicketForUpdate();
 }

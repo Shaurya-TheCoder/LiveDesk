@@ -24,6 +24,15 @@ public class Agent {
     @Column(nullable = false)
     private String passwordHash;
 
+    @Column(nullable = false)
+    private Integer maxConcurrency = 3;
+
+    @Column(nullable = false)
+    private boolean isOnline = false;
+
+    @Column(nullable = false)
+    private Integer activeChatCount = 0;
+
     protected Agent() {}
 
     public Agent(String email, String passwordHash, Role role) {
@@ -42,8 +51,8 @@ public class Agent {
         this.role = role;
     }
 
-    public Optional<UUID> getId(){
-        return Optional.ofNullable(id);
+    public UUID getId(){
+        return id;
     }
     public String getEmail(){
         return email;
@@ -61,5 +70,34 @@ public class Agent {
         Objects.requireNonNull(passwordHasher, "passwordHasher must not be null");
 
         return passwordHasher.matches(rawPassword, passwordHash);
+    }
+    public Integer getMaxConcurrency(){
+        return maxConcurrency;
+    }
+    public Integer getActiveChatCount(){
+        return activeChatCount;
+    }
+    public Boolean isOnline(){
+        return isOnline;
+    }
+
+    public void goOnline() {
+        isOnline = true;
+    }
+    public void goOffline() {
+        isOnline = false;
+    }
+
+    public void incrementActiveChatCount() {
+        if(activeChatCount >= maxConcurrency){
+            throw new IllegalStateException("Agent has already been assigned maximum tickets");
+        }
+        this.activeChatCount += 1;
+    }
+
+    public void decrementActiveChatCount() {
+        if(activeChatCount <= 0)
+            throw new IllegalStateException("Agent already has no assigned ticket");
+        this.activeChatCount -= 1;
     }
 }

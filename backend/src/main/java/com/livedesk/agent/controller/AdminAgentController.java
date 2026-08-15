@@ -27,9 +27,7 @@ public class AdminAgentController {
         Agent agent = agentService.createAgentAccount(createAgentRequest.email(), createAgentRequest.rawPassword());
         CreateAgentResponse response =
                     new CreateAgentResponse(
-                            agent.getId().orElseThrow(
-                                    () -> new IllegalStateException("Saved agent has no ID")
-                            ),
+                            agent.getId(),
                             agent.getEmail(),
                             agent.getRole()
                     );

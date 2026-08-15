@@ -17,10 +17,12 @@ import java.util.UUID;
 public class TicketService {
     private final TicketRepository ticketRepository;
     private final ChatMessageRepository chatMessageRepository;
+    private final RoutingService routingService;
 
-    public TicketService(TicketRepository ticketRepository, ChatMessageRepository chatMessageRepository){
+    public TicketService(TicketRepository ticketRepository, ChatMessageRepository chatMessageRepository, RoutingService routingService){
         this.ticketRepository = ticketRepository;
         this.chatMessageRepository = chatMessageRepository;
+        this.routingService = routingService;
     }
     @Transactional // Dono save ya toh ek sath chalenge, ya ek bhi nahi!
     public Ticket createTicket(String message, LocalDateTime now){
@@ -30,12 +32,13 @@ public class TicketService {
         Objects.requireNonNull(now, "ticket creation date should not be null.");
 
         Ticket ticket = new Ticket(now);
-        ticket = ticketRepository.save(ticket);
 
+        ticket = ticketRepository.save(ticket);
         ChatMessage firstMessage = new ChatMessage(
                 ticket.getId(), MessageSender.CUSTOMER, message, now
         );
         chatMessageRepository.save(firstMessage);
+        routingService.assignTicket(ticket);
         return ticket;
     }
 

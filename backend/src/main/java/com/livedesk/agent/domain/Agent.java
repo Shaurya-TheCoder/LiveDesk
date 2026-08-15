@@ -1,17 +1,30 @@
-package com.livedesk.agent;
+package com.livedesk.agent.domain;
 
-import com.livedesk.agent.constant.Role;
+import com.livedesk.agent.PasswordHasher;
+import jakarta.persistence.*;
 
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
-
+@Entity
+@Table(name = "agents")
 public class Agent {
-    private Long id;
-    private final String email;
-    private final Role role;
+    @Id
+    private UUID id;
+
+    @Column(unique = true, nullable = false)
+    private String email;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+    @Column(nullable = false)
     private String passwordHash;
+
+    protected Agent() {}
 
     public Agent(String email, String passwordHash, Role role) {
         if (email == null || email.isBlank()) {
@@ -23,22 +36,15 @@ public class Agent {
         if (role == null) {
             throw new IllegalArgumentException("role must not be null");
         }
+        this.id = UUID.randomUUID();
         this.email = email.toLowerCase(Locale.ROOT).trim();
         this.passwordHash = passwordHash;
         this.role = role;
     }
 
-    public Optional<Long> getId(){
+    public Optional<UUID> getId(){
         return Optional.ofNullable(id);
     }
-    void setId(Long id){
-        Objects.requireNonNull(id, "Agent id must not be null");
-        if(this.id != null){
-            throw new IllegalStateException("Agent id cannot be re-assigned.");
-        }
-        this.id = id;
-    }
-
     public String getEmail(){
         return email;
     }

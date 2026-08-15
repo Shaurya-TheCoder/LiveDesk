@@ -1,7 +1,7 @@
 package com.livedesk.messenger.websocket.interceptor;
 
-import com.livedesk.auth.TicketAuthorizationService;
-import com.livedesk.auth.TokenAuthenticationService;
+import com.livedesk.auth.service.TicketAuthorizationService;
+import com.livedesk.auth.service.TokenAuthenticationService;
 import com.livedesk.auth.session_token.InvalidSessionTokenException;
 
 import io.jsonwebtoken.JwtException;
@@ -15,6 +15,8 @@ import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
+
+import java.util.UUID;
 
 //"SUBSCRIBE-time authorization failures currently terminate the entire STOMP connection
 // (default Spring/STOMP behavior on preSend exceptions)
@@ -62,8 +64,10 @@ public class WebSocketChannelInterceptor implements ChannelInterceptor {
                 try{
                     Authentication authentication = tokenAuthenticationService.authenticateJwt(token);
                     accessor.setUser(authentication);
-                } catch (JwtException | IllegalArgumentException e) {
+                } catch (JwtException e) {
                     throw new MessagingException("Invalid JWT", e);
+                } catch (IllegalArgumentException e){
+                    throw new MessagingException("Invalid JWT x", e);
                 }
             }
             else if(sessionToken != null){
@@ -84,7 +88,7 @@ public class WebSocketChannelInterceptor implements ChannelInterceptor {
                 if (destination == null) {
                     throw new MessagingException("Missing destination");
                 }
-                Long ticketId = extractTicketId(destination);
+                UUID ticketId = extractTicketId(destination);
                 ticketAuthorizationService.verifyAccess(ticketId, authentication);
                 //might return an exception, no exception is handled therefore the connection would break
                 //when integrating frontend make this silently reject the request rather than closing the connection
@@ -96,7 +100,7 @@ public class WebSocketChannelInterceptor implements ChannelInterceptor {
         return message;
     }
 
-    private Long extractTicketId(String destination) {
+    private UUID extractTicketId(String destination) {
         String prefix = "/topic/chat/";
 
         if (!destination.startsWith(prefix)) {
@@ -106,9 +110,10 @@ public class WebSocketChannelInterceptor implements ChannelInterceptor {
         String ticketIdPart = destination.substring(prefix.length());
 
         try {
-            return Long.parseLong(ticketIdPart);
-        } catch (NumberFormatException e) {
+            return UUID.fromString(ticketIdPart);
+        } catch (IllegalArgumentException e) {
             throw new MessagingException("Invalid ticket ID", e);
         }
     }
+
 }

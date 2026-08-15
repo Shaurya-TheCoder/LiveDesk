@@ -1,19 +1,15 @@
 package com.livedesk.auth.session_token;
 
-import com.livedesk.auth.TokenAuthenticationService;
-import com.livedesk.chatsession.ChatSession;
-import com.livedesk.chatsession.ChatSessionService;
+import com.livedesk.auth.service.TokenAuthenticationService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Collections;
 
 public class SessionTokenAuthenticationFilter extends OncePerRequestFilter {
     private final TokenAuthenticationService tokenAuthenticationService;

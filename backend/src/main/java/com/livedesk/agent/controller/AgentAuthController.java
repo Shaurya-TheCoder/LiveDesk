@@ -1,6 +1,6 @@
 package com.livedesk.agent.controller;
 
-import com.livedesk.agent.AgentService;
+import com.livedesk.agent.service.AgentService;
 import com.livedesk.agent.dto.LoginAgentRequest;
 import com.livedesk.agent.dto.LoginAgentResponse;
 import jakarta.validation.Valid;

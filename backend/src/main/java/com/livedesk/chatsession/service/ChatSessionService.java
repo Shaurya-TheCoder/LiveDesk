@@ -1,11 +1,14 @@
-package com.livedesk.chatsession;
+package com.livedesk.chatsession.service;
 
 import com.livedesk.auth.session_token.InvalidSessionTokenException;
+import com.livedesk.chatsession.domain.ChatSession;
+import com.livedesk.chatsession.repository.ChatSessionRepository;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.UUID;
 
 @Service
 public class ChatSessionService {
@@ -16,7 +19,7 @@ public class ChatSessionService {
         this.chatSessionRepository = chatSessionRepository;
     }
 
-    public ChatSession createSession(Long ticketId) {
+    public ChatSession createSession(UUID ticketId) {
         String token = generateToken();
         ChatSession session = new ChatSession(ticketId, token, LocalDateTime.now());
         return chatSessionRepository.save(session);
@@ -32,7 +35,7 @@ public class ChatSessionService {
             throw new IllegalArgumentException("Session token must not be blank");
         }
 
-        return chatSessionRepository.findByToken(token)
+        return chatSessionRepository.findBySessionToken(token)
                 .orElseThrow(() -> new InvalidSessionTokenException("Invalid session token"));
     }
 }

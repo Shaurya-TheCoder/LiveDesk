@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: livedesk-postgres
+    environment:
+      POSTGRES_DB: livedesk
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5423:5432"
+    volumes:
+      - livedesk-postgres-data:/var/lib/postgresql/data
+
+volumes:
+  livedesk-postgres-data:

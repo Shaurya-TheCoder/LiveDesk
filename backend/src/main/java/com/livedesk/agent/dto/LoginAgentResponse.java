@@ -1,4 +1,6 @@
 package com.livedesk.agent.dto;
 
-public record LoginAgentResponse(Long id, String email, String token) {
+import java.util.UUID;
+
+public record LoginAgentResponse(UUID id, String email, String token) {
 }

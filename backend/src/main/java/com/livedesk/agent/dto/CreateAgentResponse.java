@@ -1,6 +1,8 @@
 package com.livedesk.agent.dto;
 
-import com.livedesk.agent.constant.Role;
+import com.livedesk.agent.domain.Role;
 
-public record CreateAgentResponse(Long id, String email, Role role) {
+import java.util.UUID;
+
+public record CreateAgentResponse(UUID id, String email, Role role) {
 }

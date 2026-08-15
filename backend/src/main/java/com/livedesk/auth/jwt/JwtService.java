@@ -1,6 +1,6 @@
 package com.livedesk.auth.jwt;
 
-import com.livedesk.agent.constant.Role;
+import com.livedesk.agent.domain.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.UUID;
 
 @Service
 public class JwtService {
@@ -29,7 +30,7 @@ public class JwtService {
     }
 
 
-    public String generateToken(long agentId, String email, Role role){
+    public String generateToken(UUID agentId, String email, Role role){
         Date now = new Date();
         Date expiry = new Date(now.getTime() + expirationMs);
 

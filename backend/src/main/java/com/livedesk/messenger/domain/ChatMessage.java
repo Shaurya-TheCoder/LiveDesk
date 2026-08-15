@@ -1,18 +1,36 @@
 package com.livedesk.messenger.domain;
 
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
+@Entity
+@Table(name = "messages")
 public class ChatMessage {
-    private Long id;
-    private final Long ticketId;
-    private final MessageSender sender;
-    private final String content;
-    private final LocalDateTime createdAt;
+
+    @Id
+    private UUID id;
+
+    @Column(name = "ticket_id", nullable = false)
+    private UUID ticketId;
+
+    @Column(name = "sender_type", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private MessageSender sender;
+
+    @Column(name = "body", nullable = false)
+    private String content;
+
+    @Column(name = "sent_at", nullable = false)
+    private LocalDateTime createdAt;
+
+    protected ChatMessage() {}
 
     public ChatMessage(
-            Long ticketId,
+            UUID ticketId,
             MessageSender sender,
             String content,
             LocalDateTime createdAt){
@@ -25,23 +43,14 @@ public class ChatMessage {
             throw new IllegalArgumentException(
                     "message content must not be null or blank");
         }
-
+        this.id = UUID.randomUUID();
         this.ticketId = ticketId;
         this.sender = sender;
         this.content = content;
         this.createdAt = createdAt;
     }
 
-    public void setId(Long id) {
-        Objects.requireNonNull(id, "id must not be null");
-
-        if (this.id != null) {
-            throw new IllegalStateException("Id cannot be re-assigned.");
-        }
-
-        this.id = id;
-    }
-    public Optional<Long> getId(){
+    public Optional<UUID> getId(){
         return Optional.ofNullable(id);
     }
 
@@ -57,7 +66,7 @@ public class ChatMessage {
         return content;
     }
 
-    public Long getTicketId() {
+    public UUID getTicketId() {
         return ticketId;
     }
 }

@@ -1,4 +1,4 @@
-package com.livedesk.agent.constant;
+package com.livedesk.agent.domain;
 
 public enum Role {
     AGENT,

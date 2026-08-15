@@ -1,7 +1,9 @@
 package com.livedesk.ticket.dto;
 
+import java.util.UUID;
+
 public record CreateTicketResponse(
-        long ticketId,
+        UUID ticketId,
         String sessionToken,
         Integer queuePosition
 ) {}

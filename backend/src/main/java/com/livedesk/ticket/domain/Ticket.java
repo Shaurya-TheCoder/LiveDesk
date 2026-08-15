@@ -1,44 +1,47 @@
-package com.livedesk.ticket;
+package com.livedesk.ticket.domain;
 
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.UUID;
 
+@Entity
+@Table(name = "tickets")
 public class Ticket {
 
-    private Long id;
-    private String firstMessage;
-    private TicketStatus status;
-    private final LocalDateTime createdAt;
+    @Id
+    private UUID id;
 
-    public Ticket(String firstMessage, LocalDateTime createdAt) {
-        if(firstMessage == null || firstMessage.isBlank()) {
-            throw new IllegalArgumentException("message must not be null or blank");
-        }
-        Objects.requireNonNull(createdAt, "ticket creation date should not be null.");
-        this.firstMessage = firstMessage;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private TicketStatus status;
+
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = "assigned_agent_id")
+    private UUID assignedAgentId;
+
+    protected Ticket() {}
+
+    public Ticket(LocalDateTime createdAt) {
+        this.id = UUID.randomUUID();
         this.status = TicketStatus.OPEN;
         this.createdAt = createdAt;
-    }
-    void setId(Long id){
-        Objects.requireNonNull(id, "id must not be null");
-        if(this.id != null){
-            throw new IllegalStateException("Id cannot be re-assigned.");
-        }
-        this.id = id;
-    }
-    public Optional<Long> getId(){
-        return Optional.ofNullable(id);
+        this.assignedAgentId = null;
     }
 
-    public String getFirstMessage(){
-        return firstMessage;
+    public UUID getId() {
+        return id;
     }
+
     public TicketStatus getStatus(){
         return status;
     }
     public LocalDateTime getCreatedAt(){
         return createdAt;
+    }
+    public UUID getAssignedAgentId() {
+        return assignedAgentId;
     }
     public void assign(){
         if(status != TicketStatus.OPEN && status != TicketStatus.QUEUED) {
@@ -61,7 +64,9 @@ public class Ticket {
     }
     public void close(){
         if(status != TicketStatus.RESOLVED) {
-            throw new IllegalStateException("Cannot close a ticket that is not RESOLVED. Current status: " + status);
+            throw new IllegalStateException(
+                    "Cannot close a ticket that is not RESOLVED. Current status: " + status
+            );
         }
         status = TicketStatus.CLOSED;
     }

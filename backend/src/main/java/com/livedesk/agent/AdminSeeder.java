@@ -1,7 +1,8 @@
 package com.livedesk.agent;
 
-import com.livedesk.agent.constant.Role;
+import com.livedesk.agent.domain.Role;
 import com.livedesk.agent.exception.DuplicateEmailException;
+import com.livedesk.agent.service.AgentService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;

@@ -11,6 +11,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 
+import java.util.UUID;
+
 @Controller
 public class ChatController {
     private final ChatMessageService chatMessageService;
@@ -22,7 +24,7 @@ public class ChatController {
     }
 
     @MessageMapping("/chat/{ticketId}")
-    public void handleMessage(@DestinationVariable Long ticketId, @Payload SendChatMessageRequest request, Authentication authentication){
+    public void handleMessage(@DestinationVariable UUID ticketId, @Payload SendChatMessageRequest request, Authentication authentication){
 
         ChatMessage message = chatMessageService.sendMessage(ticketId, request.content(), authentication);
         ChatMessageResponse response = new ChatMessageResponse(

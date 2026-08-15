@@ -4,6 +4,7 @@ import com.livedesk.auth.service.TicketAuthorizationService;
 import com.livedesk.auth.session_token.CustomerPrincipal;
 import com.livedesk.chatsession.domain.ChatSession;
 import com.livedesk.chatsession.service.ChatSessionService;
+import com.livedesk.ticket.dto.ResolveTicketResponse;
 import com.livedesk.ticket.service.TicketService;
 import com.livedesk.ticket.domain.Ticket;
 import com.livedesk.ticket.dto.CreateTicketRequest;
@@ -61,8 +62,20 @@ public class TicketController {
         CreateTicketResponse response = new CreateTicketResponse(
                 ticket.getId(),
                 session.getSessionToken(), //sessionToken
-                null //queuePosition
+                ticketService.getQueuePosition(ticket)//queuePosition
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PatchMapping("/tickets/{id}/resolve")
+    public ResponseEntity<ResolveTicketResponse> resolveTicket(@PathVariable UUID id, Authentication authentication){
+        ticketAuthorizationService.verifyAssignedAgent(id, authentication);
+        ticketService.resolveTicket(id);
+
+        ResolveTicketResponse response = new ResolveTicketResponse(
+                "Ticket Resolved Successfully"
+        );
+
+        return ResponseEntity.ok(response);
     }
 }

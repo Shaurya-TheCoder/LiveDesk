@@ -5,7 +5,9 @@ import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,4 +25,18 @@ public interface TicketRepository extends JpaRepository<Ticket, UUID> {
             nativeQuery = true
     )
     Optional<Ticket> findOldestQueuedTicketForUpdate();
+
+    @Query(
+            value = """
+        SELECT COUNT(*) + 1
+        FROM tickets
+        WHERE status = 'QUEUED'
+        AND created_at < :createdAt
+        """,
+            nativeQuery = true
+    )
+    long findQueuePosition(
+            @Param("createdAt")
+            LocalDateTime createdAt
+    );
 }

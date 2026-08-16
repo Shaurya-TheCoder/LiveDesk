@@ -13,7 +13,8 @@ public interface AgentRepository extends JpaRepository<Agent, UUID> {
             value = """
         SELECT *
         FROM agents
-        WHERE is_online = true
+        WHERE role = 'AGENT'
+        AND is_online = true
         AND active_chat_count < max_concurrency
         ORDER BY active_chat_count ASC
         LIMIT 1

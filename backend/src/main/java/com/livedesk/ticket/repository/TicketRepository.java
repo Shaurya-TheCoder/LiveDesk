@@ -1,9 +1,7 @@
 package com.livedesk.ticket.repository;
 
 import com.livedesk.ticket.domain.Ticket;
-import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 

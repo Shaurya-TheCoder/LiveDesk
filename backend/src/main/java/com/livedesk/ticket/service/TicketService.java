@@ -6,6 +6,7 @@ import com.livedesk.messenger.domain.ChatMessage;
 import com.livedesk.messenger.domain.MessageSender;
 import com.livedesk.messenger.repository.ChatMessageRepository;
 import com.livedesk.ticket.domain.Ticket;
+import com.livedesk.ticket.domain.TicketStatus;
 import com.livedesk.ticket.exception.TicketNotFoundException;
 import com.livedesk.ticket.repository.TicketRepository;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,9 @@ public class TicketService {
                         new TicketNotFoundException("Ticket not found: " + id));
     }
     public long getQueuePosition(Ticket ticket){
+        if(!ticket.getStatus().equals(TicketStatus.QUEUED)){
+            return 0;
+        }
         return ticketRepository.findQueuePosition(ticket.getCreatedAt());
     }
 

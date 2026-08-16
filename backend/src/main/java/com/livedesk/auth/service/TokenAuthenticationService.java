@@ -1,6 +1,7 @@
 package com.livedesk.auth.service;
 
 import com.livedesk.agent.domain.Role;
+import com.livedesk.agent.dto.AgentPrincipal;
 import com.livedesk.auth.jwt.JwtService;
 import com.livedesk.auth.session_token.CustomerPrincipal;
 import com.livedesk.chatsession.domain.ChatSession;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class TokenAuthenticationService {
@@ -29,6 +31,14 @@ public class TokenAuthenticationService {
     public Authentication authenticateJwt(String token) {
         Claims claims = jwtService.validateToken(token);
 
+        UUID agentId =
+                UUID.fromString(
+                        claims.getSubject()
+                );
+
+        String email =
+                claims.get("email", String.class);
+
         Role role = Role.valueOf(
                 claims.get("role", String.class)
         );
@@ -38,9 +48,9 @@ public class TokenAuthenticationService {
                         "ROLE_" + role.name()
                 )
         );
-
+        AgentPrincipal principal = new AgentPrincipal(agentId, email, role);
         return new UsernamePasswordAuthenticationToken(
-                claims.getSubject(),
+                principal,
                 null,
                 authorities
         );

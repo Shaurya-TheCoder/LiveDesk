@@ -43,10 +43,11 @@ public class Ticket {
     public UUID getAssignedAgentId() {
         return assignedAgentId;
     }
-    public void assign(){
+    public void assign(UUID agentId){
         if(status != TicketStatus.OPEN && status != TicketStatus.QUEUED) {
             throw new IllegalStateException("Cannot assign ticket in status " + status + ". Only OPEN or QUEUED tickets can be assigned.");
         }
+        assignedAgentId = agentId;
         status = TicketStatus.ASSIGNED;
     }
     public void queue(){

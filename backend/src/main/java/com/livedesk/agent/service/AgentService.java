@@ -45,9 +45,7 @@ public class AgentService {
         if (!agent.matchesPassword(rawPassword, passwordHasher)) {
             throw new InvalidCredentialsException("Invalid Credentials");
         }
-        UUID id = agent.getId()
-                .orElseThrow(() ->
-                        new IllegalStateException("Authenticated agent has no id"));
+        UUID id = agent.getId();
 
         return new LoginAgentResponse(id, agent.getEmail(), jwtService.generateToken(id, agent.getEmail(), agent.getRole()));
     }

@@ -15,6 +15,10 @@ public class Ticket {
     @Enumerated(EnumType.STRING)
     private TicketStatus status;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private TicketPriority priority;
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
@@ -28,6 +32,7 @@ public class Ticket {
         this.status = TicketStatus.OPEN;
         this.createdAt = createdAt;
         this.assignedAgentId = null;
+        this.priority = TicketPriority.NORMAL;
     }
 
     public UUID getId() {
@@ -43,6 +48,7 @@ public class Ticket {
     public UUID getAssignedAgentId() {
         return assignedAgentId;
     }
+    public TicketPriority getPriority() { return priority; }
     public void assign(UUID agentId){
         if(status != TicketStatus.OPEN && status != TicketStatus.QUEUED) {
             throw new IllegalStateException("Cannot assign ticket in status " + status + ". Only OPEN or QUEUED tickets can be assigned.");
@@ -71,4 +77,9 @@ public class Ticket {
         }
         status = TicketStatus.CLOSED;
     }
+    public void escalate(){
+        this.priority = TicketPriority.ESCALATED;
+    }
+
+
 }

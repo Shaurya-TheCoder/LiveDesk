@@ -1,4 +1,4 @@
-package com.livedesk.events;
+package com.livedesk.events.dto;
 
 import java.util.UUID;
 

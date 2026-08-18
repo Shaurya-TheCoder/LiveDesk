@@ -2,7 +2,7 @@ package com.livedesk.ticket.service;
 
 import com.livedesk.agent.domain.Agent;
 import com.livedesk.agent.repository.AgentRepository;
-import com.livedesk.events.TicketAssignedEvent;
+import com.livedesk.events.dto.TicketAssignedEvent;
 import com.livedesk.ticket.domain.Ticket;
 import com.livedesk.ticket.repository.TicketRepository;
 import jakarta.transaction.Transactional;

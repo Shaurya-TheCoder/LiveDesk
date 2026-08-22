@@ -16,6 +16,7 @@ import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
 import java.util.UUID;
 
 //"SUBSCRIBE-time authorization failures currently terminate the entire STOMP connection
@@ -88,26 +89,51 @@ public class WebSocketChannelInterceptor implements ChannelInterceptor {
                 if (destination == null) {
                     throw new MessagingException("Missing destination");
                 }
-                UUID ticketId = extractTicketId(destination);
-                ticketAuthorizationService.verifyAccess(ticketId, authentication);
-                //might return an exception, no exception is handled therefore the connection would break
-                //when integrating frontend make this silently reject the request rather than closing the connection
+
+                if (destination.equals("/user/queue/notifications")) {
+
+                    if (authentication.getAuthorities().stream()
+                            .noneMatch(a -> Objects.equals(a.getAuthority(), "ROLE_AGENT"))) {
+                        throw new MessagingException("Only agents can subscribe to notifications");
+                    }
+                }else if(destination.equals("/topic/admin/notifications")){
+
+                    if(authentication.getAuthorities().stream()
+                            .noneMatch(a -> Objects.equals(a.getAuthority(), "ROLE_ADMIN"))){
+                        throw new MessagingException("Only Admins can subscribe to notifications");
+                    }
+                }
+                else{
+                    UUID ticketId = extractTicketId(destination);
+                    ticketAuthorizationService.verifyAccess(ticketId, authentication);
+                }
             }else{
                 throw new MessagingException("Empty Principal in the accessor");
             }
         }
-
+        //might return an exception, no exception is handled therefore the connection would break
+        //when integrating frontend make this silently reject the request rather than closing the connection
         return message;
     }
 
     private UUID extractTicketId(String destination) {
-        String prefix = "/topic/chat/";
 
-        if (!destination.startsWith(prefix)) {
-            throw new MessagingException("Invalid chat destination");
+        String ticketIdPart;
+
+        if (destination.startsWith("/topic/chat/")) {
+            ticketIdPart = destination.substring("/topic/chat/".length());
+
+        } else if (destination.startsWith("/topic/ticket/")
+                && destination.endsWith("/notifications")) {
+
+            ticketIdPart = destination.substring(
+                    "/topic/ticket/".length(),
+                    destination.length() - "/notifications".length()
+            );
+
+        } else {
+            throw new MessagingException("Invalid ticket destination");
         }
-
-        String ticketIdPart = destination.substring(prefix.length());
 
         try {
             return UUID.fromString(ticketIdPart);

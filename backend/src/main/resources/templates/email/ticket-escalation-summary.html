@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>SLA Escalation Summary</title>
+    <!--[if mso]>
+    <noscript>
+        <xml>
+            <o:OfficeDocumentSettings>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+        </xml>
+    </noscript>
+    <![endif]-->
+    <style>
+        body, table, td { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { -ms-interpolation-mode: bicubic; border: 0; outline: none; text-decoration: none; }
+        body { margin: 0; padding: 0; width: 100% !important; height: 100% !important; background-color: #f2f4f7; }
+
+        @media only screen and (max-width: 600px) {
+          .email-container { width: 100% !important; }
+          .stack-cell { display: block !important; width: 100% !important; box-sizing: border-box !important; }
+          .stat-cell { padding-bottom: 12px !important; }
+          .px-32 { padding-left: 20px !important; padding-right: 20px !important; }
+          .total-number { font-size: 34px !important; }
+          .stat-number { font-size: 26px !important; }
+        }
+    </style>
+</head>
+<body style="margin:0; padding:0; background-color:#f2f4f7;">
+<!-- Preheader (hidden preview text) -->
+<div style="display:none; max-height:0; overflow:hidden; mso-hide:all; font-size:1px; line-height:1px; color:#f2f4f7;">
+    SLA Escalation Summary &ndash; {{totalEscalatedCount}} ticket(s) escalated.
+</div>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f2f4f7;">
+    <tr>
+        <td align="center" style="padding: 32px 16px;">
+
+            <table role="presentation" class="email-container" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px; max-width:600px; background-color:#ffffff; border:1px solid #e4e7ec; border-radius:10px; overflow:hidden;">
+
+                <!-- Header / Wordmark -->
+                <tr>
+                    <td class="px-32" style="padding: 28px 32px; border-bottom: 1px solid #edf0f3;">
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                            <tr>
+                                <td align="left">
+                                    <span style="font-family: 'Trebuchet MS', 'Segoe UI', -apple-system, BlinkMacSystemFont, Arial, sans-serif; font-size: 22px; font-weight: 800; color: #0f172a; letter-spacing: -0.6px; text-transform: none;">Live<span style="color:#2563eb; font-weight:700;">Desk</span></span>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <!-- Heading + description -->
+                <tr>
+                    <td class="px-32" style="padding: 32px 32px 8px 32px; font-family: Arial, Helvetica, sans-serif;">
+                        <h1 style="margin:0 0 10px 0; font-size:22px; line-height:28px; color:#101828; font-weight:700;">
+                            SLA Escalation Summary
+                        </h1>
+                        <p style="margin:0; font-size:14px; line-height:22px; color:#475467;">
+                            The following tickets were automatically escalated because their SLA response thresholds were exceeded.
+                        </p>
+                    </td>
+                </tr>
+
+                <!-- Stats -->
+                <tr>
+                    <td class="px-32" style="padding: 24px 32px 8px 32px;">
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                            <tr>
+                                <td class="stack-cell stat-cell" width="48%" valign="top" style="padding-right: 6px;">
+                                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f8fafc; border:1px solid #e4e7ec; border-radius:8px;">
+                                        <tr>
+                                            <td align="center" style="padding: 20px 12px; font-family: Arial, Helvetica, sans-serif;">
+                                                <div class="stat-number" style="font-size:28px; line-height:32px; font-weight:700; color:#1d2939;">{{queuedEscalatedCount}}</div>
+                                                <div style="margin-top:6px; font-size:12px; line-height:16px; color:#667085; text-transform:uppercase; letter-spacing:0.4px;">Queued Escalations</div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td class="stack-cell" width="4%" style="font-size:0; line-height:0;">&nbsp;</td>
+                                <td class="stack-cell stat-cell" width="48%" valign="top" style="padding-left: 6px;">
+                                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f8fafc; border:1px solid #e4e7ec; border-radius:8px;">
+                                        <tr>
+                                            <td align="center" style="padding: 20px 12px; font-family: Arial, Helvetica, sans-serif;">
+                                                <div class="stat-number" style="font-size:28px; line-height:32px; font-weight:700; color:#1d2939;">{{unansweredEscalatedCount}}</div>
+                                                <div style="margin-top:6px; font-size:12px; line-height:16px; color:#667085; text-transform:uppercase; letter-spacing:0.4px;">Unanswered Escalations</div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <!-- Total -->
+                <tr>
+                    <td class="px-32" style="padding: 16px 32px 32px 32px;">
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#eff4ff; border:1px solid #d1e0ff; border-radius:8px;">
+                            <tr>
+                                <td align="center" style="padding: 24px 12px; font-family: Arial, Helvetica, sans-serif;">
+                                    <div class="total-number" style="font-size:40px; line-height:44px; font-weight:800; color:#2563eb;">{{totalEscalatedCount}}</div>
+                                    <div style="margin-top:6px; font-size:13px; line-height:18px; color:#3651a5; text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">Total Tickets Escalated</div>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <!-- Footer -->
+                <tr>
+                    <td class="px-32" style="padding: 20px 32px 28px 32px; border-top: 1px solid #edf0f3;">
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                            <tr>
+                                <td align="center" style="font-family: Arial, Helvetica, sans-serif;">
+                                    <p style="margin:0 0 4px 0; font-size:12px; line-height:18px; color:#98a2b3;">
+                                        This is an automated message from LiveDesk.
+                                    </p>
+                                    <p style="margin:0; font-size:11px; line-height:16px; color:#b0b7c3;">
+                                        &copy; 2026 LiveDesk. All rights reserved.
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+            </table>
+
+        </td>
+    </tr>
+</table>
+</body>
+</html>

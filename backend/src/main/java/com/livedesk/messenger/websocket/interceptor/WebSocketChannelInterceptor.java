@@ -96,7 +96,14 @@ public class WebSocketChannelInterceptor implements ChannelInterceptor {
                             .noneMatch(a -> Objects.equals(a.getAuthority(), "ROLE_AGENT"))) {
                         throw new MessagingException("Only agents can subscribe to notifications");
                     }
-                }else{
+                }else if(destination.equals("/topic/admin/notifications")){
+
+                    if(authentication.getAuthorities().stream()
+                            .noneMatch(a -> Objects.equals(a.getAuthority(), "ROLE_ADMIN"))){
+                        throw new MessagingException("Only Admins can subscribe to notifications");
+                    }
+                }
+                else{
                     UUID ticketId = extractTicketId(destination);
                     ticketAuthorizationService.verifyAccess(ticketId, authentication);
                 }

@@ -4,6 +4,7 @@ import com.livedesk.auth.service.TicketAuthorizationService;
 import com.livedesk.auth.session_token.CustomerPrincipal;
 import com.livedesk.messenger.domain.ChatMessage;
 import com.livedesk.messenger.domain.MessageSender;
+import com.livedesk.messenger.dto.TypingIndicatorResponse;
 import com.livedesk.messenger.repository.ChatMessageRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -31,4 +32,19 @@ public class ChatMessageService {
 
         return chatMessageRepository.save(message);
     }
+
+    public TypingIndicatorResponse sendTypingResponse(UUID ticketId, boolean isTyping, Authentication authentication){
+        ticketAuthorizationService.verifyAccess(ticketId, authentication);
+
+        MessageSender sender = authentication.getPrincipal() instanceof CustomerPrincipal
+                ? MessageSender.CUSTOMER
+                : MessageSender.AGENT;
+
+        return new TypingIndicatorResponse(
+                        ticketId,
+                        sender,
+                        isTyping
+                );
+    }
+
 }

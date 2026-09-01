@@ -1,5 +1,7 @@
 package com.livedesk.messenger.websocket.interceptor;
 
+import com.livedesk.agent.dto.AgentPrincipal;
+import com.livedesk.agent.service.AgentPresenceService;
 import com.livedesk.auth.service.TicketAuthorizationService;
 import com.livedesk.auth.service.TokenAuthenticationService;
 import com.livedesk.auth.session_token.InvalidSessionTokenException;
@@ -14,6 +16,7 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
@@ -29,8 +32,10 @@ public class WebSocketChannelInterceptor implements ChannelInterceptor {
 
     private final TokenAuthenticationService tokenAuthenticationService;
     private final TicketAuthorizationService ticketAuthorizationService;
+    private final AgentPresenceService agentPresenceService;
 
-    public WebSocketChannelInterceptor(TokenAuthenticationService tokenAuthenticationService, TicketAuthorizationService ticketAuthorizationService) {
+    public WebSocketChannelInterceptor(AgentPresenceService agentPresenceService, TokenAuthenticationService tokenAuthenticationService, TicketAuthorizationService ticketAuthorizationService) {
+        this.agentPresenceService = agentPresenceService;
         this.tokenAuthenticationService = tokenAuthenticationService;
         this.ticketAuthorizationService = ticketAuthorizationService;
     }
@@ -65,6 +70,14 @@ public class WebSocketChannelInterceptor implements ChannelInterceptor {
                 try{
                     Authentication authentication = tokenAuthenticationService.authenticateJwt(token);
                     accessor.setUser(authentication);
+                    AgentPrincipal principal = (AgentPrincipal)authentication.getPrincipal();
+
+                    String sessionId = accessor.getSessionId();
+
+                    if (sessionId == null) {
+                        throw new MessagingException("Missing WebSocket session ID");
+                    }
+                    agentPresenceService.markOnline(principal.agentId(), sessionId);
                 } catch (JwtException e) {
                     throw new MessagingException("Invalid JWT", e);
                 } catch (IllegalArgumentException e){
@@ -109,6 +122,23 @@ public class WebSocketChannelInterceptor implements ChannelInterceptor {
                 }
             }else{
                 throw new MessagingException("Empty Principal in the accessor");
+            }
+        }else if (StompCommand.DISCONNECT == command) {
+
+            Authentication authentication =
+                    (Authentication) accessor.getUser();
+
+            if (authentication != null &&
+                    authentication.getPrincipal() instanceof AgentPrincipal agentPrincipal) {
+
+                String sessionId = accessor.getSessionId();
+
+                if (sessionId != null) {
+                    agentPresenceService.markOffline(
+                            agentPrincipal.agentId(),
+                            sessionId
+                    );
+                }
             }
         }
         //might return an exception, no exception is handled therefore the connection would break

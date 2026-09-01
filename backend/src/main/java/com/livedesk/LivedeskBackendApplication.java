@@ -11,7 +11,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class LivedeskBackendApplication {
 
 	public static void main(String[] args) {
-		Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
+		Dotenv dotenv = Dotenv.configure().directory("../").load();
 		for(DotenvEntry entry : dotenv.entries()){
 			System.setProperty(entry.getKey(), entry.getValue());
 		}

@@ -1,6 +1,6 @@
 package com.livedesk.ticket.service;
 
-
+import com.livedesk.events.dto.EscalationSummaryEvent;
 import com.livedesk.events.dto.TicketEscalatedEvent;
 import com.livedesk.messenger.domain.ChatMessage;
 import com.livedesk.messenger.domain.MessageSender;
@@ -27,17 +27,32 @@ public class EscalationService {
     private final ChatMessageRepository chatMessageRepository;
     private final TicketRepository ticketRepository;
 
-    public EscalationService(ChatMessageRepository chatMessageRepository, TicketRepository ticketRepository, ApplicationEventPublisher eventPublisher){
+
+    public EscalationService(ChatMessageRepository chatMessageRepository, TicketRepository ticketRepository,
+                             ApplicationEventPublisher eventPublisher){
         this.chatMessageRepository = chatMessageRepository;
         this.ticketRepository = ticketRepository;
         this.eventPublisher = eventPublisher;
+
     }
 
     @Transactional
-    public void processEscalations(){
+    public void processEscalations() {
         LocalDateTime now = LocalDateTime.now();
-        long totalQueuedTicketsEscalated = checkQueuedTickets(now);
-        long totalAssignedTicketsEscalated = checkAssignedTickets(now);
+
+        long queuedEscalated = checkQueuedTickets(now);
+        long assignedEscalated = checkAssignedTickets(now);
+
+        if (queuedEscalated + assignedEscalated == 0) {
+            return;
+        }
+
+        eventPublisher.publishEvent(
+                new EscalationSummaryEvent(
+                        queuedEscalated,
+                        assignedEscalated
+                )
+        );
     }
 
     public long checkQueuedTickets(LocalDateTime now){

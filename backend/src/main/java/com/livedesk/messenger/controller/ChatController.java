@@ -3,6 +3,8 @@ package com.livedesk.messenger.controller;
 import com.livedesk.messenger.domain.ChatMessage;
 import com.livedesk.messenger.dto.ChatMessageResponse;
 import com.livedesk.messenger.dto.SendChatMessageRequest;
+import com.livedesk.messenger.dto.TypingIndicatorRequest;
+import com.livedesk.messenger.dto.TypingIndicatorResponse;
 import com.livedesk.messenger.service.ChatMessageService;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -35,5 +37,19 @@ public class ChatController {
                 message.getCreatedAt()
         );
         messagingTemplate.convertAndSend("/topic/chat/" + ticketId, response);
+    }
+
+    @MessageMapping("/chat/{ticketId}/typing")
+    public void handleTyping(
+            @DestinationVariable UUID ticketId,
+            @Payload TypingIndicatorRequest request,
+            Authentication authentication
+    ) {
+        TypingIndicatorResponse response = chatMessageService.sendTypingResponse(ticketId, request.typing(), authentication);
+
+        messagingTemplate.convertAndSend(
+                "/topic/chat/" + ticketId + "/typing",
+                response
+        );
     }
 }

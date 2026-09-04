@@ -1,11 +1,15 @@
 package com.livedesk.messenger.websocket.interceptor;
 
+import com.livedesk.agent.domain.Role;
 import com.livedesk.agent.dto.AgentPrincipal;
 import com.livedesk.agent.service.AgentPresenceService;
 import com.livedesk.auth.service.TicketAuthorizationService;
 import com.livedesk.auth.service.TokenAuthenticationService;
 import com.livedesk.auth.session_token.InvalidSessionTokenException;
 
+import com.livedesk.ticket.domain.Ticket;
+import com.livedesk.ticket.service.RoutingService;
+import com.livedesk.ticket.service.TicketQueueProcessingService;
 import io.jsonwebtoken.JwtException;
 import org.jspecify.annotations.Nullable;
 import org.springframework.messaging.Message;
@@ -33,11 +37,13 @@ public class WebSocketChannelInterceptor implements ChannelInterceptor {
     private final TokenAuthenticationService tokenAuthenticationService;
     private final TicketAuthorizationService ticketAuthorizationService;
     private final AgentPresenceService agentPresenceService;
+    private final TicketQueueProcessingService routingService;
 
-    public WebSocketChannelInterceptor(AgentPresenceService agentPresenceService, TokenAuthenticationService tokenAuthenticationService, TicketAuthorizationService ticketAuthorizationService) {
+    public WebSocketChannelInterceptor(TicketQueueProcessingService routingService, AgentPresenceService agentPresenceService, TokenAuthenticationService tokenAuthenticationService, TicketAuthorizationService ticketAuthorizationService) {
         this.agentPresenceService = agentPresenceService;
         this.tokenAuthenticationService = tokenAuthenticationService;
         this.ticketAuthorizationService = ticketAuthorizationService;
+        this.routingService = routingService;
     }
 
     @Override
@@ -78,6 +84,9 @@ public class WebSocketChannelInterceptor implements ChannelInterceptor {
                         throw new MessagingException("Missing WebSocket session ID");
                     }
                     agentPresenceService.markOnline(principal.agentId(), sessionId);
+                    if(principal.role().equals(Role.AGENT)) {
+                        routingService.processQueuedTicketsAsync();
+                    }
                 } catch (JwtException e) {
                     throw new MessagingException("Invalid JWT", e);
                 } catch (IllegalArgumentException e){

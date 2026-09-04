@@ -27,9 +27,6 @@ public class Agent {
     private Integer maxConcurrency = 3;
 
     @Column(nullable = false)
-    private boolean isOnline = false;
-
-    @Column(nullable = false)
     private Integer activeChatCount = 0;
 
     protected Agent() {}
@@ -75,16 +72,6 @@ public class Agent {
     }
     public Integer getActiveChatCount(){
         return activeChatCount;
-    }
-    public Boolean isOnline(){
-        return isOnline;
-    }
-
-    public void goOnline() {
-        isOnline = true;
-    }
-    public void goOffline() {
-        isOnline = false;
     }
 
     public void incrementActiveChatCount() {

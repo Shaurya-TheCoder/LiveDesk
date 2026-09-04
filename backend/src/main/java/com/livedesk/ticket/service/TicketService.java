@@ -7,8 +7,10 @@ import com.livedesk.messenger.domain.MessageSender;
 import com.livedesk.messenger.repository.ChatMessageRepository;
 import com.livedesk.ticket.domain.Ticket;
 import com.livedesk.ticket.domain.TicketStatus;
+import com.livedesk.events.dto.TicketResolvedEvent;
 import com.livedesk.ticket.exception.TicketNotFoundException;
 import com.livedesk.ticket.repository.TicketRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,13 +24,15 @@ public class TicketService {
     private final ChatMessageRepository chatMessageRepository;
     private final AgentRepository agentRepository;
     private final RoutingService routingService;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public TicketService(TicketRepository ticketRepository, ChatMessageRepository chatMessageRepository,
+    public TicketService(ApplicationEventPublisher eventPublisher, TicketRepository ticketRepository, ChatMessageRepository chatMessageRepository,
                          RoutingService routingService, AgentRepository agentRepository){
         this.ticketRepository = ticketRepository;
         this.chatMessageRepository = chatMessageRepository;
         this.routingService = routingService;
         this.agentRepository = agentRepository;
+        this.eventPublisher = eventPublisher;
     }
     public Ticket getTicket(UUID id) {
         return ticketRepository.findById(id)
@@ -76,6 +80,6 @@ public class TicketService {
         ticketRepository.save(ticket);
         agentRepository.save(agent);
 
-        routingService.tryAssignNextQueuedTicket();
+        eventPublisher.publishEvent(new TicketResolvedEvent());
     }
 }

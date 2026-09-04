@@ -48,10 +48,27 @@ public class RoutingService {
     }
 
     @Transactional
-    public void tryAssignNextQueuedTicket(){
-        Ticket ticket = ticketRepository.findOldestQueuedTicketForUpdate().orElse(null);
-        if(ticket != null) {
-            assignTicket(ticket);
+    public void assignQueuedTickets() {
+        while (true) {
+            Optional<Ticket> queuedTicket =
+                    ticketRepository.findOldestQueuedTicketForUpdate();
+
+            if (queuedTicket.isEmpty()) {
+                return;
+            }
+
+            Optional<Agent> availableAgent = findAvailableAgent();
+
+            if (availableAgent.isEmpty()) {
+                return;
+            }
+
+            Ticket ticket = queuedTicket.get();
+            Agent agent = availableAgent.get();
+
+            assignTicketToAgent(ticket, agent);
+            persistAssignment(ticket, agent);
+            publishAssignmentEvent(ticket, agent);
         }
     }
 

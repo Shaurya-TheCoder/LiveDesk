@@ -158,8 +158,15 @@ public class WebSocketChannelInterceptor implements ChannelInterceptor {
     private UUID extractTicketId(String destination) {
 
         String ticketIdPart;
+        if (destination.startsWith("/topic/chat/")
+                && destination.endsWith("/typing")) {
 
-        if (destination.startsWith("/topic/chat/")) {
+            ticketIdPart = destination.substring(
+                    "/topic/chat/".length(),
+                    destination.length() - "/typing".length()
+            );
+        }
+        else if(destination.startsWith("/topic/chat/")) {
             ticketIdPart = destination.substring("/topic/chat/".length());
 
         } else if (destination.startsWith("/topic/ticket/")

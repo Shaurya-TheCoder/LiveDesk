@@ -1,10 +1,13 @@
 package com.livedesk.events.service;
 
+import com.livedesk.agent.service.AgentPresenceService;
 import com.livedesk.events.dto.*;
 import com.livedesk.messenger.websocket.WebSocketDestinations;
+import org.aspectj.weaver.loadtime.Agent;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -46,7 +49,7 @@ public class NotificationService {
 
         String message;
         if(agentId != null)
-            message = "Ticket Id: "+ticketId+" assigned to agent: "+ticketId+" has been escalated!";
+            message = "Ticket Id: "+ticketId+" assigned to agent: "+agentId+" has been escalated!";
         else
             message = ticketId + " hasn't been assigned an agent";
 
@@ -56,8 +59,8 @@ public class NotificationService {
                 message
         );
         messagingTemplate.convertAndSend(
-                WebSocketDestinations.ADMIN_NOTIFICATIONS,
-                notification
+                    WebSocketDestinations.ADMIN_NOTIFICATIONS,
+                    notification
         );
     }
 

@@ -4,6 +4,7 @@ package com.livedesk.events.email;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -26,6 +27,7 @@ public class EmailServiceImpl implements EmailService {
         this.resourceLoader = resourceLoader;
     }
 
+    @Async("emailExecutor")
     @Override
     public void sendEscalationSummary(
             String recipientEmail,

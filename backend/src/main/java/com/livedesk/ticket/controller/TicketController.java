@@ -4,6 +4,9 @@ import com.livedesk.auth.service.TicketAuthorizationService;
 import com.livedesk.auth.session_token.CustomerPrincipal;
 import com.livedesk.chatsession.domain.ChatSession;
 import com.livedesk.chatsession.service.ChatSessionService;
+import com.livedesk.messenger.dto.ChatMessageResponse;
+import com.livedesk.messenger.dto.PageResponse;
+import com.livedesk.messenger.service.ChatMessageService;
 import com.livedesk.ticket.dto.ResolveTicketResponse;
 import com.livedesk.ticket.service.TicketService;
 import com.livedesk.ticket.domain.Ticket;
@@ -11,6 +14,7 @@ import com.livedesk.ticket.dto.CreateTicketRequest;
 import com.livedesk.ticket.dto.CreateTicketResponse;
 import com.livedesk.ticket.dto.GetTicketResponse;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -25,12 +29,14 @@ import java.util.UUID;
 public class TicketController {
     private final TicketService ticketService;
     private final ChatSessionService chatSessionService;
+    private final ChatMessageService chatMessageService;
     private final TicketAuthorizationService ticketAuthorizationService;
 
-    public TicketController(TicketService ticketService,TicketAuthorizationService ticketAuthorizationService, ChatSessionService chatSessionService){
+    public TicketController(ChatMessageService chatMessageService, TicketService ticketService,TicketAuthorizationService ticketAuthorizationService, ChatSessionService chatSessionService){
         this.ticketService = ticketService;
         this.ticketAuthorizationService = ticketAuthorizationService;
         this.chatSessionService = chatSessionService;
+        this.chatMessageService = chatMessageService;
     }
     @GetMapping("/tickets/{id}")
     public ResponseEntity<GetTicketResponse> getTicket(
@@ -77,5 +83,19 @@ public class TicketController {
         );
 
         return ResponseEntity.ok(response);
+    }
+    @GetMapping("/tickets/{ticketId}/messages")
+    public ResponseEntity<PageResponse<ChatMessageResponse>> getMessages(
+            @PathVariable UUID ticketId,
+            Authentication authentication,
+            Pageable pageable
+    ) {
+        return ResponseEntity.ok(
+                chatMessageService.getMessages(
+                        ticketId,
+                        authentication,
+                        pageable
+                )
+        );
     }
 }

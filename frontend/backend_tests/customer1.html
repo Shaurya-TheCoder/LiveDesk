@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LiveDesk - Customer Typing Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.1.1/bundles/stomp.umd.min.js"></script>
+</head>
+<body>
+
+<h2>Customer WebSocket Test</h2>
+
+<label>
+    WebSocket URL:
+    <input id="wsUrl" value="ws://localhost:3030/ws">
+</label>
+<br><br>
+
+<label>
+    Session Token:
+    <input id="token" type="text" placeholder="customer session token">
+</label>
+<br><br>
+
+<label>
+    Ticket ID:
+    <input id="ticketId" type="text" placeholder="ticket UUID">
+</label>
+<br><br>
+
+<button onclick="connect()">Connect</button>
+<button onclick="disconnect()">Disconnect</button>
+
+<hr>
+
+<button onclick="setTyping(true)">Start Typing</button>
+<button onclick="setTyping(false)">Stop Typing</button>
+
+<h3>Events</h3>
+<pre id="output"></pre>
+
+<script>
+    let client;
+    let subscription;
+
+    function log(message) {
+        document.getElementById("output").textContent += message + "\n";
+    }
+
+    function connect() {
+        const wsUrl = document.getElementById("wsUrl").value;
+        const token = document.getElementById("token").value;
+        const ticketId = document.getElementById("ticketId").value;
+
+        client = new StompJs.Client({
+            brokerURL: wsUrl,
+
+            connectHeaders: {
+                "Session-Token": token
+            },
+
+            debug: function (str) {
+                console.log(str);
+            },
+
+            onConnect: function () {
+                log("CONNECTED");
+
+                const destination =
+                    `/topic/chat/${ticketId}/typing`;
+
+                subscription = client.subscribe(
+                    destination,
+                    function (message) {
+                        log("RECEIVED:");
+                        log(message.body);
+                    }
+                );
+
+                log("Subscribed to " + destination);
+            },
+
+            onStompError: function (frame) {
+                log("STOMP ERROR: " + frame.body);
+            },
+
+            onWebSocketError: function (error) {
+                log("WebSocket ERROR");
+                console.error(error);
+            }
+        });
+
+        client.activate();
+    }
+
+    function setTyping(typing) {
+        if (!client || !client.connected) {
+            log("Not connected");
+            return;
+        }
+
+        const ticketId = document.getElementById("ticketId").value;
+
+        client.publish({
+            destination: `/app/chat/${ticketId}/typing`,
+            body: JSON.stringify({
+                typing: typing
+            })
+        });
+
+        log("Sent typing=" + typing);
+    }
+
+    function disconnect() {
+        if (client) {
+            client.deactivate();
+            log("DISCONNECTED");
+        }
+    }
+</script>
+
+</body>
+</html>

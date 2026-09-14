@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LiveDesk WebSocket Test</title>
+</head>
+<body>
+
+<h2>LiveDesk WebSocket Test</h2>
+
+<script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.1.1/bundles/stomp.umd.min.js"></script>
+
+<script>
+
+const jwt = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI5ZjU0YWQ1Mi0wOTI3LTRlNGMtYTgxZi00NTZmYWZiMzdiNmUiLCJlbWFpbCI6InNoYXVyeWFAZ21haWwuY29tIiwicm9sZSI6IkFHRU5UIiwiaWF0IjoxNzg4NTI0Njg4LCJleHAiOjE3ODg1MjU1ODh9.OghMdqvyabiQ4N4vqA_yjrjxZlCJX_w65nCiyVR6NcnhinqEjbn9mvoDCWQMlBRDQv347Oq91kTXNYLJblDueg";
+
+const client = new StompJs.Client({
+    brokerURL: "ws://localhost:3030/ws",
+
+    connectHeaders: {
+        Authorization: "Bearer " + jwt
+    },
+
+    debug: function (str) {
+        console.log(str);
+    },
+
+    onConnect: function (frame) {
+
+        console.log("CONNECTED:", frame);
+
+        // client.subscribe(
+        //     "/topic/admin/notifications",
+        //     function (message) {
+
+        //         console.log(
+        //             "ADMIN NOTIFICATION:",
+        //             JSON.parse(message.body)
+        //         );
+
+        //     }
+        //);
+    },
+
+    onStompError: function (frame) {
+        console.error("STOMP ERROR:", frame);
+    }
+});
+
+client.activate();
+
+// setTimeout(() => {
+//     client.deactivate();
+//     console.log("client disconnected!");
+// }, 15 * 1000);
+
+</script>
+
+</body>
+</html>

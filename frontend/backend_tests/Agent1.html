@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LiveDesk - Agent Typing Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.1.1/bundles/stomp.umd.min.js"></script>
+</head>
+<body>
+
+<h2>Agent WebSocket Test</h2>
+
+<label>
+    WebSocket URL:
+    <input id="wsUrl" value="ws://localhost:3030/ws">
+</label>
+<br><br>
+
+<label>
+    JWT:
+    <input id="token" type="text" placeholder="agent JWT">
+</label>
+<br><br>
+
+<label>
+    Ticket ID:
+    <input id="ticketId" type="text" placeholder="ticket UUID">
+</label>
+<br><br>
+
+<button onclick="connect()">Connect</button>
+<button onclick="disconnect()">Disconnect</button>
+
+<h3>Typing Events</h3>
+<pre id="output"></pre>
+
+<script>
+    let client;
+    let subscription;
+
+    function log(message) {
+        document.getElementById("output").textContent += message + "\n";
+    }
+
+    function connect() {
+        const wsUrl = document.getElementById("wsUrl").value;
+        const token = document.getElementById("token").value;
+        const ticketId = document.getElementById("ticketId").value;
+
+        client = new StompJs.Client({
+            brokerURL: wsUrl,
+
+            connectHeaders: {
+                "Authorization": `Bearer ${token}`
+            },
+
+            debug: function (str) {
+                console.log(str);
+            },
+
+            onConnect: function () {
+                log("CONNECTED");
+
+                const destination =
+                    `/topic/chat/${ticketId}/typing`;
+
+                subscription = client.subscribe(
+                    destination,
+                    function (message) {
+                        log("CUSTOMER TYPING EVENT:");
+                        log(message.body);
+                    }
+                );
+
+                log("Subscribed to " + destination);
+            },
+
+            onStompError: function (frame) {
+                log("STOMP ERROR: " + frame.body);
+            },
+
+            onWebSocketError: function (error) {
+                log("WebSocket ERROR");
+                console.error(error);
+            }
+        });
+
+        client.activate();
+    }
+
+    function disconnect() {
+        if (client) {
+            client.deactivate();
+            log("DISCONNECTED");
+        }
+    }
+</script>
+
+</body>
+</html>

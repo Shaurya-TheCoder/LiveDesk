@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LiveDesk Customer WebSocket Test</title>
+</head>
+<body>
+
+<h2>Customer WebSocket Test</h2>
+
+<script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.1.1/bundles/stomp.umd.min.js"></script>
+
+<script>
+
+const sessionToken = "V2_Sc1OyI4splYeF-MTOSP8ihPug9EM7kfktKmx40GQ";
+const ticketId = "e3894d58-3363-4ecc-9c10-b335f50a2655";
+
+const client = new StompJs.Client({
+    brokerURL: "ws://localhost:3030/ws",
+
+    connectHeaders: {
+        "Session-Token": sessionToken
+    },
+
+    debug: function (str) {
+        console.log(str);
+    },
+
+    onConnect: function (frame) {
+
+        console.log("CONNECTED:", frame);
+
+        client.subscribe(
+            "/topic/ticket/" + ticketId + "/notifications",
+            function (message) {
+
+                console.log(
+                    "CUSTOMER NOTIFICATION:",
+                    JSON.parse(message.body)
+                );
+
+            }
+        );
+    },
+
+    onStompError: function (frame) {
+        console.error("STOMP ERROR:", frame);
+    }
+});
+
+client.activate();
+
+</script>
+
+</body>
+</html>

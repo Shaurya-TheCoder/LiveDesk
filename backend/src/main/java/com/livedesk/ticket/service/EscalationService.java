@@ -47,12 +47,12 @@ public class EscalationService {
             return;
         }
 
-        eventPublisher.publishEvent(
-                new EscalationSummaryEvent(
-                        queuedEscalated,
-                        assignedEscalated
-                )
-        );
+//        eventPublisher.publishEvent(
+//                new EscalationSummaryEvent(
+//                        queuedEscalated,
+//                        assignedEscalated
+//                )
+//        );
     }
 
     public long checkQueuedTickets(LocalDateTime now){

@@ -5,5 +5,6 @@ import java.util.UUID;
 public record CreateTicketResponse(
         UUID ticketId,
         String sessionToken,
-        Long queuePosition
+        Long queuePosition,
+        String recoveryCode
 ) {}

@@ -40,6 +40,15 @@ public class ChatSession {
         this.createdAt = createdAt;
     }
 
+    public void rotateSessionToken(String newSessionToken) {
+        if (newSessionToken == null || newSessionToken.isBlank()) {
+            throw new IllegalArgumentException(
+                    "sessionToken must not be null or blank"
+            );
+        }
+
+        this.sessionToken = newSessionToken;
+    }
     public Optional<UUID> getId() { return Optional.ofNullable(id); }
     public UUID getTicketId() { return ticketId; }
     public String getSessionToken() { return sessionToken; }

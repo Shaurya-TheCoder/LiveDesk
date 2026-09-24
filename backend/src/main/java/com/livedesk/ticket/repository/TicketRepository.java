@@ -41,4 +41,6 @@ public interface TicketRepository extends JpaRepository<Ticket, UUID> {
     );
 
     List<Ticket> findByStatus(TicketStatus status);
+    List<Ticket> findByAssignedAgentIdAndStatus(UUID agentId, TicketStatus status);
+    Optional<Ticket> findByRecoveryCodeHash(String recoveryCodeHash);
 }

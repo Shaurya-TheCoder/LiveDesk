@@ -6,13 +6,11 @@ const useCustomerStore = create(
         (set) => ({
             ticketId: null,
             sessionToken: null,
-            queuePosition: null,
 
-            setTicketSession: ({ ticketId, sessionToken, queuePosition }) => {
+            setTicketSession: ({ ticketId, sessionToken}) => {
                 set({
                     ticketId,
                     sessionToken,
-                    queuePosition
                 });
             },
 
@@ -20,7 +18,6 @@ const useCustomerStore = create(
                 set({
                     ticketId: null,
                     sessionToken: null,
-                    queuePosition: null
                 });
             }
         }),

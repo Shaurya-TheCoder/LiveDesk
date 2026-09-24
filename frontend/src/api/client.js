@@ -1,11 +1,18 @@
+import useAuthStore from "../stores/authStore";
 const API_BASE_URL = "";
 
 export async function apiFetch(path, options = {}) {
+    const {skipAuth = false, ...fetchOptions} = options;
+    const token = useAuthStore.getState().token;
+
     const response = await fetch(`${API_BASE_URL}${path}`, {
-        ...options,
+        ...fetchOptions,
         headers: {
             "Content-Type": "application/json",
-            ...options.headers
+            ...(!skipAuth && token && {
+                Authorization: `Bearer ${token}`
+            }),
+            ...fetchOptions.headers
         }
     });
 

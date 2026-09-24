@@ -4,6 +4,7 @@ let stompClient = null;
 
 export function connectStomp({
     sessionToken,
+    token,
     onConnect,
     onError
 }) {
@@ -14,10 +15,12 @@ export function connectStomp({
     stompClient = new Client({
         brokerURL: "ws://localhost:3030/ws",
 
-        connectHeaders: {
+        connectHeaders: sessionToken ? {
             "Session-Token": sessionToken
+        } : {
+            Authorization: `Bearer ${token}`
         },
-
+        
         reconnectDelay: 5000,
 
         debug: (message) => {

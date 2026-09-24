@@ -1,20 +1,35 @@
 import { BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
 
-import CustomerStartPage from "../pages/CustomerStarterPage";
+import CustomerStarterPage from "../pages/CustomerStarterPage";
 import TicketPage from "../pages/TicketPage";
+import AgentLogin from "../pages/AgentLogin";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import AgentDashboardPage from "../pages/AgentDashboard";
+import ProtectedRoute from "./ProtectedRoute";
 
 function AppRouter(){
     return (
         <BrowserRouter>
+        <Header />
+        <main>
             <Routes>
-                <Route path="/start" element={<CustomerStartPage />} />
+                <Route path="/home" element={<CustomerStarterPage />} />
+                <Route path="/agent/login" element={<AgentLogin />} />
+
                 <Route path="/ticket/:ticketId" element={<TicketPage />} />
+                
+                <Route element={<ProtectedRoute />}>
+                    <Route path="/agent/dashboard" element={<AgentDashboardPage />} />
+                </Route>
 
                 <Route
                     path="*"
-                    element={<Navigate to="/start" replace />}
+                    element={<Navigate to="/home" replace />}
                 />
             </Routes>
+        </main>
+        <Footer />
         </BrowserRouter>
     )
 }

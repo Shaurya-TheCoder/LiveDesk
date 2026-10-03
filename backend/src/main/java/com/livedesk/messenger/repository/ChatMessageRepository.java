@@ -10,10 +10,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, UUID> {
-    Page<ChatMessage> findByTicketIdOrderByCreatedAtAsc(UUID ticketId, Pageable pageable);
+    Page<ChatMessage> findByTicketIdOrderByCreatedAtDesc(UUID ticketId, Pageable pageable);
 
     Optional<ChatMessage> findTopByTicketIdAndSenderOrderByCreatedAtDesc(
             UUID ticketId,
             MessageSender sender
     );
+
+    Optional<ChatMessage> findTopByTicketIdOrderByCreatedAtDesc(UUID ticketId);
 }

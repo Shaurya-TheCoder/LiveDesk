@@ -25,18 +25,34 @@ public class Ticket {
     @Column(name = "assigned_agent_id")
     private UUID assignedAgentId;
 
+    @Column(name = "subject", nullable = false)
+    private String subject;
+
+    @Column(name = "recovery_code_hash", nullable = false)
+    private String recoveryCodeHash;
+
     protected Ticket() {}
 
-    public Ticket(LocalDateTime createdAt) {
+    public Ticket(LocalDateTime createdAt, String subject, String recoveryCodeHash) {
         this.id = UUID.randomUUID();
         this.status = TicketStatus.OPEN;
         this.createdAt = createdAt;
         this.assignedAgentId = null;
         this.priority = TicketPriority.NORMAL;
+        this.recoveryCodeHash = recoveryCodeHash;
+        this.subject = subject;
     }
 
     public UUID getId() {
         return id;
+    }
+
+    public String getRecoveryCodeHash() {
+        return recoveryCodeHash;
+    }
+
+    public String getSubject() {
+        return subject;
     }
 
     public TicketStatus getStatus(){

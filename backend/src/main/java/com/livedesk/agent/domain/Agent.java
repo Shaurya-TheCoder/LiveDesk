@@ -13,6 +13,9 @@ public class Agent {
     @Id
     private UUID id;
 
+    @Column(nullable = false)
+    private String name;
+
     @Column(unique = true, nullable = false)
     private String email;
 
@@ -31,7 +34,10 @@ public class Agent {
 
     protected Agent() {}
 
-    public Agent(String email, String passwordHash, Role role) {
+    public Agent(String name, String email, String passwordHash, Role role) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("name must not be null or blank");
+        }
         if (email == null || email.isBlank()) {
             throw new IllegalArgumentException("email must not be null or blank");
         }
@@ -42,6 +48,7 @@ public class Agent {
             throw new IllegalArgumentException("role must not be null");
         }
         this.id = UUID.randomUUID();
+        this.name = name;
         this.email = email.toLowerCase(Locale.ROOT).trim();
         this.passwordHash = passwordHash;
         this.role = role;
@@ -49,6 +56,9 @@ public class Agent {
 
     public UUID getId(){
         return id;
+    }
+    public String getName(){
+        return name;
     }
     public String getEmail(){
         return email;

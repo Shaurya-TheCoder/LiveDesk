@@ -4,6 +4,7 @@ import com.livedesk.auth.session_token.InvalidSessionTokenException;
 import com.livedesk.chatsession.domain.ChatSession;
 import com.livedesk.chatsession.repository.ChatSessionRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
@@ -37,5 +38,18 @@ public class ChatSessionService {
 
         return chatSessionRepository.findBySessionToken(token)
                 .orElseThrow(() -> new InvalidSessionTokenException("Invalid session token"));
+    }
+    @Transactional
+    public ChatSession rotateSessionToken(UUID ticketId) {
+        ChatSession session = chatSessionRepository.findByTicketId(ticketId)
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Chat session not found")
+                );
+
+        String newToken = generateToken();
+
+        session.rotateSessionToken(newToken);
+
+        return chatSessionRepository.save(session);
     }
 }

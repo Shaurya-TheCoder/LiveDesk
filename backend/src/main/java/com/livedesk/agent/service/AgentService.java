@@ -25,9 +25,10 @@ public class AgentService {
         this.passwordHasher = passwordHasher;
         this.jwtService = jwtService;
     }
-    public Agent createAgentAccount(String email, String rawPassword){
+    public Agent createAgentAccount(String name, String email, String rawPassword){
         // New Agent created
         return  createAgent(
+                name,
                 email,
                 rawPassword,
                 Role.AGENT
@@ -47,9 +48,9 @@ public class AgentService {
         }
         UUID id = agent.getId();
 
-        return new LoginAgentResponse(id, agent.getEmail(), jwtService.generateToken(id, agent.getEmail(), agent.getRole()));
+        return new LoginAgentResponse(id, agent.getEmail(), jwtService.generateToken(id, agent.getEmail(), agent.getRole()), agent.getRole());
     }
-    public Agent createAgent(String email, String rawPassword, Role role) {
+    public Agent createAgent(String name, String email, String rawPassword, Role role) {
 
         email = email.toLowerCase(Locale.ROOT).trim();
 
@@ -59,7 +60,7 @@ public class AgentService {
 
         String hashedPassword = passwordHasher.hash(rawPassword);
 
-        Agent agent = new Agent(email, hashedPassword, role);
+        Agent agent = new Agent(name, email, hashedPassword, role);
 
         return agentRepository.save(agent);
     }

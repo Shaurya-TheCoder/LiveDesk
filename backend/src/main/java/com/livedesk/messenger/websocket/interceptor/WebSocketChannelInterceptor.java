@@ -26,10 +26,6 @@ import org.springframework.stereotype.Component;
 import java.util.Objects;
 import java.util.UUID;
 
-//"SUBSCRIBE-time authorization failures currently terminate the entire STOMP connection
-// (default Spring/STOMP behavior on preSend exceptions)
-// revisit with a soft-reject (return null + /user/queue/errors push)
-// if frontend integration needs the client to survive a denied subscribe without reconnecting."
 
 @Component
 public class WebSocketChannelInterceptor implements ChannelInterceptor {

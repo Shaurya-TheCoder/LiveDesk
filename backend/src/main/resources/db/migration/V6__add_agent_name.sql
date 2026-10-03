@@ -1,0 +1,2 @@
+ALTER TABLE agents
+    ADD COLUMN name VARCHAR(64);

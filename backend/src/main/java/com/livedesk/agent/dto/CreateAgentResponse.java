@@ -4,5 +4,5 @@ import com.livedesk.agent.domain.Role;
 
 import java.util.UUID;
 
-public record CreateAgentResponse(UUID id, String email, Role role) {
+public record CreateAgentResponse(UUID id, String name, String email, Role role) {
 }

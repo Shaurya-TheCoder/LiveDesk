@@ -98,7 +98,7 @@ public class TicketService {
         Objects.requireNonNull(now, "ticket creation date should not be null.");
         Objects.requireNonNull(recoveryCode, "recovery code should not be null");
 
-        Ticket ticket = new Ticket(now, subject, recoveryCode); //HashUtil.sha256(recoveryCode)
+        Ticket ticket = new Ticket(now, subject, HashUtil.sha256(recoveryCode));
 
         ticket = ticketRepository.save(ticket);
         ChatMessage firstMessage = new ChatMessage(
@@ -135,9 +135,9 @@ public class TicketService {
             throw new IllegalArgumentException("Recovery code must not be blank");
         }
 
-        //String submittedHash = HashUtil.sha256(recoveryCode);
+        String submittedHash = HashUtil.sha256(recoveryCode);
 
-        Ticket ticket = ticketRepository.findByRecoveryCodeHash(recoveryCode)
+        Ticket ticket = ticketRepository.findByRecoveryCodeHash(submittedHash)
                 .orElseThrow(() ->
                         new TicketNotFoundException("Invalid recovery code")
                 );

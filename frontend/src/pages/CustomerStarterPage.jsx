@@ -60,29 +60,23 @@ function CustomerStartPage() {
     setLoading(true);
 
     try {
-      const ticket = await createTicket(message.trim(), subject.trim());
+      const ticket = await createTicket(subject.trim(), message.trim());
 
-      const { ticketId, sessionToken } = ticket;
-      setTicketSession({ ticketId, sessionToken });
-
-      connectStomp({
-        sessionToken: ticket.sessionToken,
-        onConnect: (client) => {
-          client.subscribe(`/topic/chat/${ticket.ticketId}`, (msg) => {
-            console.log("Chat message received:", JSON.parse(msg.body));
-          });
-        },
-        onError: (err) => {
-          console.error("Customer STOMP connection failed:", err);
-        },
-      });
-
-      // Show recovery popup and wait until user checks the box & clicks "Okay"
-      if (ticket.recoveryCode) {
-        await showCustomPopup(ticket.recoveryCode);
+      if(ticket.status === 429){
+        navigate('/too-many-requests', { 
+          state: { fromRateLimitTrigger: true } 
+        });
+        return;
       }
+        const { ticketId, sessionToken } = ticket;
+        setTicketSession({ ticketId, sessionToken });
 
-      navigate(`/ticket/${ticket.ticketId}`);
+        // Show recovery popup and wait until user checks the box & clicks "Okay"
+        if (ticket.recoveryCode) {
+          await showCustomPopup(ticket.recoveryCode);
+        }
+
+        navigate(`/ticket/${ticketId}`);
     } catch (err) {
       setError(err.message || err.error || "Failed to create ticket.");
     } finally {

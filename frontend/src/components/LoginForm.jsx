@@ -1,48 +1,66 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { login } from '../api/authApi';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import useAuthStore from '../stores/authStore';
 
 export default function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [sessionExpiredMessage, setSessionExpiredMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+  
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const setAuth = useAuthStore((state) => state.setAuth);
 
-  const setAuth = useAuthStore((state) => state.setAuth)
+  // Check if redirected due to an expired token
+  useEffect(() => {
+    if (searchParams.get("expired") === "true") {
+      setSessionExpiredMessage("Your session has expired. Please log in again to continue.");
+    }
+  }, [searchParams]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMessage('');
+    setSessionExpiredMessage(''); // Clear banner on new submit attempt
+    setLoading(true);
 
     try {
-        const response = await login(email, password);
+      const response = await login(email, password);
+      const { id, email: agentEmail, token, role } = response;
 
-        const { id, email: agentEmail, token } = response;
+      if (!id || !agentEmail || !token) {
+        throw new Error("Invalid login response");
+      }
 
-        if (!id || !agentEmail || !token) {
-            throw new Error("Invalid login response");
-        }
+      setAuth({
+        id,
+        email: agentEmail,
+        token,
+        role: role || 'AGENT'
+      });
 
-        console.log("Agent ID:", id);
-        console.log("Agent Email:", agentEmail);
-        console.log("JWT:", token);
-
-        setAuth({
-            id,
-            email: agentEmail,
-            token
-        });
-
+      const normalizedRole = role?.toUpperCase();
+      if (normalizedRole === 'ADMIN') {
+        navigate("/admin/dashboard");
+      } else {
         navigate("/agent/dashboard");
+      }
 
     } catch (error) {
-        console.error("Login failed:", error);
+      console.error("Login failed:", error);
+      setErrorMessage("Invalid email or password. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="relative w-full min-h-[calc(100vh-80px)] py-12 md:py-20 px-4 sm:px-6 lg:px-8 bg-slate-50/50 font-sans text-slate-800 flex items-center justify-center overflow-hidden"
-    style={
-      {backgroundImage:'url("/img/background.jpg")'}
-    }>
+    style={{ backgroundImage: 'url("/img/background.jpg")' }}>
+      
       {/* Decorative Background Glows */}
       <div className="absolute top-1/4 left-1/3 w-96 h-96 rounded-full bg-violet-200/40 blur-[130px] pointer-events-none -z-10" />
       <div className="absolute bottom-1/4 right-1/3 w-96 h-96 rounded-full bg-indigo-200/40 blur-[130px] pointer-events-none -z-10" />
@@ -59,15 +77,40 @@ export default function LoginForm() {
             </svg>
           </div>
           <h2 className="text-2xl font-extrabold tracking-tight text-slate-900">
-            Agent Portal Login
+            Portal Login
           </h2>
           <p className="text-xs text-slate-500 font-normal">
             Enter your credentials to access the support dashboard
           </p>
         </div>
 
+        {/* Session Expired Warning Banner */}
+        {sessionExpiredMessage && (
+          <div className="px-4 py-3 bg-amber-50 border border-amber-200/80 rounded-2xl flex items-center gap-3">
+            <svg className="w-4 h-4 text-amber-600 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            <span className="text-xs font-semibold text-amber-800">{sessionExpiredMessage}</span>
+          </div>
+        )}
+
+        {/* Incorrect Credentials Error Banner */}
+        {errorMessage && (
+          <div className="px-4 py-3 bg-rose-50 border border-rose-200/80 rounded-2xl flex items-center gap-3">
+            <svg className="w-4 h-4 text-rose-600 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            <span className="text-xs font-semibold text-rose-800">{errorMessage}</span>
+          </div>
+        )}
+
         {/* Form Container */}
         <form onSubmit={handleSubmit} className="space-y-4">
+          
           {/* Email Field */}
           <div className="space-y-1.5">
             <label className="block text-xs font-bold text-slate-800">
@@ -78,7 +121,7 @@ export default function LoginForm() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="agent@company.com"
+                placeholder="user@company.com"
                 required
                 className="w-full px-4 py-3 text-sm text-slate-700 placeholder:text-slate-400 bg-white border border-slate-200 rounded-2xl focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 transition-all outline-none"
               />
@@ -105,12 +148,19 @@ export default function LoginForm() {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full flex items-center justify-center gap-2 px-6 py-3.5 mt-2 text-sm font-semibold text-white bg-violet-600 rounded-2xl hover:bg-violet-700 transition-all shadow-lg shadow-violet-200 active:scale-[0.99] cursor-pointer"
+            disabled={loading}
+            className="w-full flex items-center justify-center gap-2 px-6 py-3.5 mt-2 text-sm font-semibold text-white bg-violet-600 rounded-2xl hover:bg-violet-700 transition-all shadow-lg shadow-violet-200 active:scale-[0.99] cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            <span>Login</span>
-            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
+            {loading ? (
+              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <>
+                <span>Login</span>
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </>
+            )}
           </button>
         </form>
 

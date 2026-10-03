@@ -7,6 +7,7 @@ const useAuthStore = create(
             token: null,
             agentId: null,
             email: null,
+            role:null,
             isAuthenticated: false,
 
             setAuth: (authData) => {
@@ -14,6 +15,7 @@ const useAuthStore = create(
                     token: authData.token,
                     agentId: authData.id,
                     email: authData.email,
+                    role : authData.role,
                     isAuthenticated: true
                 });
             },
@@ -23,6 +25,7 @@ const useAuthStore = create(
                     token: null,
                     agentId: null,
                     email: null,
+                    role : null,
                     isAuthenticated: false
                 });
             }

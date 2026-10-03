@@ -1,15 +1,18 @@
 import React from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-
+import { useEffect, useState, useRef } from "react";
 import { getTicket } from "../api/ticketApi.js";
 import useCustomerStore from "../stores/customerStore.js";
 import Chat from "../features/chat/chat.jsx";
+import { connectStomp, disconnectStomp } from "../ws/stompClient.js";
+import TicketNotificationPopup from "../components/TicketNotificationPopup.jsx";
 
 function TicketPage() {
   const { ticketId } = useParams();
-
   const sessionToken = useCustomerStore((state) => state.sessionToken);
+  const [notification, setNotification] = useState(null);
+  const notificationSubscriptionRef = useRef(null);
 
   const {
     data: ticket,
@@ -54,6 +57,43 @@ function TicketPage() {
       return String(dateString);
     }
   };
+  useEffect(() => {
+    if (!ticketId || !sessionToken) {
+        return;
+    }
+
+    connectStomp({
+        sessionToken,
+
+        onConnect: (client) => {
+            console.log("Customer STOMP connected");
+
+            notificationSubscriptionRef.current?.unsubscribe(); 
+
+            notificationSubscriptionRef.current  = client.subscribe(
+              `/topic/ticket/${ticketId}/notifications`,
+              (message) => {
+                  const receivedNotification = JSON.parse(message.body);
+      
+                  console.log("Customer notification:", receivedNotification);
+      
+                  setNotification(receivedNotification);
+              }
+          );
+        },
+
+        onError: (error) => {
+            console.error("Customer STOMP connection failed:", error);
+        },
+    });
+
+    return () => {
+        notificationSubscriptionRef.current?.unsubscribe();
+        notificationSubscriptionRef.current = null;
+  
+        disconnectStomp();
+    };
+}, [ticketId, sessionToken]);
 
   // Loading State
   if (isLoading) {
@@ -112,7 +152,8 @@ function TicketPage() {
   }
 
   return (
-    <div className="relative w-full min-h-[calc(100vh-80px)] py-4 sm:py-6 px-4 md:px-8 bg-slate-50/60 font-sans text-slate-800 overflow-hidden flex flex-col items-center">
+    <div className="relative w-full min-h-[calc(100vh-80px)] py-4 sm:py-6 px-4 md:px-8 bg-slate-50/60 font-sans text-slate-800 overflow-hidden flex flex-col items-center"
+    style={{ backgroundImage: `url('../public/img/background.jpg')` }}>
       {/* Background Ambient Glows & Grid Pattern */}
       <div className="absolute top-0 left-0 w-125 h-125 rounded-full bg-linear-to-br from-violet-200/50 via-purple-100/30 to-transparent blur-[120px] pointer-events-none -z-10" />
       <div className="absolute bottom-0 right-0 w-125 h-125 rounded-full bg-linear-to-tl from-indigo-200/40 via-violet-100/30 to-transparent blur-[120px] pointer-events-none -z-10" />
@@ -180,6 +221,14 @@ function TicketPage() {
           />
         </div>
       </main>
+        {notification && (
+        <TicketNotificationPopup
+          type={notification.type}
+          ticketId={notification.ticketId}
+          message={notification.message}
+          onClose={() => setNotification(null)}
+        />
+      )}
     </div>
   );
 }

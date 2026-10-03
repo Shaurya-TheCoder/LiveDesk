@@ -7,7 +7,7 @@ function TicketList({
   selectedTicket,
   onSelectTicket,
   onResolveTicket, // Callback when resolve is confirmed
-  authToken 
+  authToken
 }) {
   const [activeTab, setActiveTab] = useState("assigned");
   const [ticketToResolve, setTicketToResolve] = useState(null);
@@ -56,7 +56,7 @@ function TicketList({
     if (!ticketToResolve) return;
 
     try {
-      const response  = await resolveTicket(ticketToResolve.id, authToken);
+      const response = await resolveTicket(ticketToResolve.id, authToken);
       console.log(response);
 
       if (onResolveTicket) {
@@ -71,10 +71,10 @@ function TicketList({
 
   return (
     <>
-      <aside className="w-full sm:w-80 md:w-96 h-full flex flex-col bg-white border-r border-slate-100 font-sans text-slate-800">
+      <aside className="w-full sm:w-80 md:w-96 h-full flex flex-col bg-white border-r border-slate-100 font-sans text-slate-800 overflow-hidden">
         
         {/* Header & Tabs */}
-        <div className="p-4 sm:p-5 border-b border-slate-100 space-y-4">
+        <div className="p-4 sm:p-5 border-b border-slate-100 space-y-4 shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="p-2 rounded-xl bg-violet-100/80 text-violet-600">
@@ -98,7 +98,7 @@ function TicketList({
               onClick={() => setActiveTab("assigned")}
               className={`flex-1 py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                 activeTab === "assigned"
-                  ? "bg-white text-violet-700 shadow-xs font-bold"
+                  ? "bg-white text-violet-700 shadow-2xs font-bold"
                   : "hover:text-slate-900"
               }`}
             >
@@ -119,7 +119,7 @@ function TicketList({
               onClick={() => setActiveTab("resolved")}
               className={`flex-1 py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                 activeTab === "resolved"
-                  ? "bg-white text-violet-700 shadow-xs font-bold"
+                  ? "bg-white text-violet-700 shadow-2xs font-bold"
                   : "hover:text-slate-900"
               }`}
             >
@@ -137,8 +137,8 @@ function TicketList({
           </div>
         </div>
 
-        {/* Ticket List Area */}
-        <div className="flex-1 overflow-y-auto p-3 space-y-2">
+        {/* Scrollable Ticket List Area */}
+        <div className="flex-1 min-h-0 overflow-y-auto p-3 space-y-2 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
           {displayTickets.length === 0 ? (
             <div className="text-center py-12 px-4 space-y-2">
               <div className="w-10 h-10 mx-auto rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400">
@@ -159,7 +159,7 @@ function TicketList({
                   onClick={() => onSelectTicket(ticket)}
                   className={`p-3.5 rounded-2xl transition-all border cursor-pointer group ${
                     isSelected
-                      ? "bg-violet-50/60 border-violet-200 shadow-xs"
+                      ? "bg-violet-50/60 border-violet-200 shadow-2xs"
                       : "bg-white border-transparent hover:bg-slate-50 hover:border-slate-100"
                   }`}
                 >
@@ -250,7 +250,7 @@ function TicketList({
               <button
                 type="button"
                 onClick={handleConfirmResolve}
-                className="flex-1 py-2.5 px-4 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl transition-colors shadow-xs shadow-emerald-200 cursor-pointer"
+                className="flex-1 py-2.5 px-4 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl transition-colors shadow-2xs shadow-emerald-200 cursor-pointer"
               >
                 Yes, Resolve
               </button>

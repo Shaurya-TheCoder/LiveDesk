@@ -7,6 +7,9 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import AgentDashboardPage from "../pages/AgentDashboard";
 import ProtectedRoute from "./ProtectedRoute";
+import RateLimitPage from "../pages/RateLimitPage";
+import AdminDashboardPage from "../pages/AdminDashboard";
+import AgentRegister from "../pages/AgentRegister";
 
 function AppRouter(){
     return (
@@ -21,8 +24,11 @@ function AppRouter(){
                 
                 <Route element={<ProtectedRoute />}>
                     <Route path="/agent/dashboard" element={<AgentDashboardPage />} />
+                    <Route path="/admin/register-agent" element={<AgentRegister />} />
+                    <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
                 </Route>
 
+                <Route path="/too-many-requests" element={<RateLimitPage />} />
                 <Route
                     path="*"
                     element={<Navigate to="/home" replace />}

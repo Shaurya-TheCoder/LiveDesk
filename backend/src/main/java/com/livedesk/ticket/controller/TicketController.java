@@ -13,8 +13,10 @@ import com.livedesk.messenger.dto.PageResponse;
 import com.livedesk.messenger.service.ChatMessageService;
 import com.livedesk.ticket.RecoveryCodeGenerator;
 import com.livedesk.ticket.dto.*;
+import com.livedesk.ticket.service.TicketRateLimiter;
 import com.livedesk.ticket.service.TicketService;
 import com.livedesk.ticket.domain.Ticket;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -36,13 +38,17 @@ public class TicketController {
     private final ChatMessageService chatMessageService;
     private final TicketAuthorizationService ticketAuthorizationService;
     private final AgentPresenceService agentPresenceService;
+    private final TicketRateLimiter ticketRateLimiter;
 
-    public TicketController(AgentPresenceService agentPresenceService, ChatMessageService chatMessageService, TicketService ticketService,TicketAuthorizationService ticketAuthorizationService, ChatSessionService chatSessionService){
+    public TicketController(AgentPresenceService agentPresenceService, ChatMessageService chatMessageService,
+                            TicketService ticketService,TicketAuthorizationService ticketAuthorizationService,
+                            ChatSessionService chatSessionService, TicketRateLimiter ticketRateLimiter){
         this.ticketService = ticketService;
         this.ticketAuthorizationService = ticketAuthorizationService;
         this.chatSessionService = chatSessionService;
         this.chatMessageService = chatMessageService;
         this.agentPresenceService = agentPresenceService;
+        this.ticketRateLimiter = ticketRateLimiter;
     }
     @GetMapping("/tickets/{id}")
     public ResponseEntity<GetTicketResponse> getTicket(
@@ -64,7 +70,13 @@ public class TicketController {
         return ResponseEntity.ok(response);
     }
     @PostMapping("/tickets")
-    public ResponseEntity<CreateTicketResponse> createTicket(@Valid @RequestBody CreateTicketRequest request){
+    public ResponseEntity<CreateTicketResponse> createTicket(@Valid @RequestBody CreateTicketRequest request, HttpServletRequest httpRequest){
+        String clientIp = httpRequest.getRemoteAddr();
+
+        if(!ticketRateLimiter.isAllowed(clientIp)){
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).build();
+        }
+
         String recoveryCode = RecoveryCodeGenerator.generate();
         Ticket ticket = ticketService.createTicket(request.message(), LocalDateTime.now(), request.subject(), recoveryCode);
         UUID ticketId = ticket.getId();

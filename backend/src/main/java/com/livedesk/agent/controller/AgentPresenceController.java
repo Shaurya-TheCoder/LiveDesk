@@ -5,7 +5,9 @@ import com.livedesk.agent.service.AgentPresenceService;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
 
+@Controller
 public class AgentPresenceController {
 
     private final AgentPresenceService agentPresenceService;

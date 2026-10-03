@@ -24,10 +24,11 @@ public class AdminAgentController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CreateAgentResponse> createAgent(@Valid @RequestBody CreateAgentRequest createAgentRequest){
-        Agent agent = agentService.createAgentAccount(createAgentRequest.email(), createAgentRequest.rawPassword());
+        Agent agent = agentService.createAgentAccount(createAgentRequest.name(), createAgentRequest.email(), createAgentRequest.rawPassword());
         CreateAgentResponse response =
                     new CreateAgentResponse(
                             agent.getId(),
+                            agent.getName(),
                             agent.getEmail(),
                             agent.getRole()
                     );

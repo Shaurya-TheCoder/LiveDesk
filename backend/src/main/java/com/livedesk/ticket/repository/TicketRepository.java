@@ -1,6 +1,7 @@
 package com.livedesk.ticket.repository;
 
 import com.livedesk.ticket.domain.Ticket;
+import com.livedesk.ticket.domain.TicketPriority;
 import com.livedesk.ticket.domain.TicketStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -43,4 +44,13 @@ public interface TicketRepository extends JpaRepository<Ticket, UUID> {
     List<Ticket> findByStatus(TicketStatus status);
     List<Ticket> findByAssignedAgentIdAndStatus(UUID agentId, TicketStatus status);
     Optional<Ticket> findByRecoveryCodeHash(String recoveryCodeHash);
+
+    long countByStatus(TicketStatus status);
+
+    long countByPriority(TicketPriority priority);
+
+    long countByAssignedAgentIdAndStatus(
+            UUID agentId,
+            TicketStatus status
+    );
 }

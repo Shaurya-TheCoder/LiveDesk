@@ -12,11 +12,13 @@ public class AdminSeeder implements CommandLineRunner{
 
     private final AgentService agentService;
 
+    private final String name;
     private final String email;
     private final String password;
 
-    public AdminSeeder(AgentService agentService, @Value("${admin.email}") String email, @Value("${admin.password}") String password){
+    public AdminSeeder(AgentService agentService,@Value("${admin.name}") String name,@Value("${admin.email}") String email, @Value("${admin.password}") String password){
         this.agentService = agentService;
+        this.name = name;
         this.email = email;
         this.password = password;
     }
@@ -25,6 +27,7 @@ public class AdminSeeder implements CommandLineRunner{
     public void run(String... args) throws Exception {
         try {
             agentService.createAgent(
+                    name,
                     email,
                     password,
                     Role.ADMIN

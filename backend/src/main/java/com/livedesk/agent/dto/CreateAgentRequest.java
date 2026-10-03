@@ -5,6 +5,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public record CreateAgentRequest(
+        @NotBlank(message = "name is required")
+        String name,
+
         @NotBlank(message = "Email is required")
         @Email(message = "Email must be valid")
         String email,

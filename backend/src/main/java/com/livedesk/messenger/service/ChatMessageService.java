@@ -54,7 +54,7 @@ public class ChatMessageService {
     public PageResponse<ChatMessageResponse> getMessages(UUID ticketId, Authentication authentication, Pageable pageable) {
         ticketAuthorizationService.verifyAccess(ticketId, authentication);
 
-        Page<ChatMessage> messages = chatMessageRepository.findByTicketIdOrderByCreatedAtAsc(ticketId, pageable);
+        Page<ChatMessage> messages = chatMessageRepository.findByTicketIdOrderByCreatedAtDesc(ticketId, pageable);
 
         return new PageResponse<>(
                 messages.getContent().stream()
